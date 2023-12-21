@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "656656655606",
+    "project_id": "sport-92cec",
+    "storage_bucket": "sport-92cec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656656655606:android:6f83d3a7f8fb0854a578d7",
+        "android_client_info": {
+          "package_name": "com.example.s"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmLhm19fwV5RCTsyDOcpuUdX62C_pxmj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656656655606:android:7385a286f2ab4bfda578d7",
+        "android_client_info": {
+          "package_name": "com.example.sport"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmLhm19fwV5RCTsyDOcpuUdX62C_pxmj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
