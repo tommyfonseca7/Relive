@@ -6,6 +6,6 @@ sealed class Screens (val route:String){
     object Done: Screens("done")
     object Edit: Screens("edit")
     object PostRegistForm : Screens("postregistform")
-
+    object SearchUsers : Screens("searchusers")
     object MemoriesScreen : Screens("memoriesscreen")
 }

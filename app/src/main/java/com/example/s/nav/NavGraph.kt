@@ -10,6 +10,7 @@ import com.example.s.nav.screen.Edit
 import com.example.s.nav.screen.MemoriesScreen
 import com.example.s.nav.screen.PostRegistForm
 import com.example.s.nav.screen.Regist
+import com.example.s.nav.screen.SearchUsers
 import com.example.s.nav.screen.SignIn
 
 @Composable
@@ -41,6 +42,10 @@ fun NavGraph (navController: NavHostController, main: Activity){
 
         composable(Screens.MemoriesScreen.route) {
             MemoriesScreen(navController = navController, main = main)
+        }
+
+        composable(Screens.SearchUsers.route) {
+            SearchUsers(navController = navController, main = main)
         }
     }
 }
