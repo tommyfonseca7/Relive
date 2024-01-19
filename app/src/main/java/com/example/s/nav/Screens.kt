@@ -5,4 +5,7 @@ sealed class Screens (val route:String){
     object Regist: Screens("regis")
     object Done: Screens("done")
     object Edit: Screens("edit")
+    object PostRegistForm : Screens("postregistform")
+
+    object MemoriesScreen : Screens("memoriesscreen")
 }

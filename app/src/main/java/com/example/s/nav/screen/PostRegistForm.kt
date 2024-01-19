@@ -1,8 +1,8 @@
 package com.example.s.nav.screen
 
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,31 +31,38 @@ import com.example.s.nav.Screens
 import com.example.s.utils.EditField
 import com.example.s.utils.EditPassField
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun Regist(navController: NavController, main: Activity) {
+fun PostRegistForm(navController: NavController, main: Activity, modifier: Modifier =
+    Modifier
+        .fillMaxSize()
+        .wrapContentSize(
+            Alignment.Center
+        )) {
     var auth = Firebase.auth
-    var email by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    var confpass by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf(Color.LightGray) }
+    var email = auth.currentUser?.email
+    var name by  remember { mutableStateOf("") }
     var errm by remember { mutableStateOf("") }
-
-
+    var username by  remember { mutableStateOf("") }
+    var color by remember { mutableStateOf(Color.LightGray) }
+    var sports by remember { mutableStateOf("") }
+    val db = Firebase.firestore
+    val usersRef = db.collection("Users")
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.TopStart
     ) {
-
         Text(
-            text = "Register",
+            text = "We're almost done...",
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .align(Alignment.TopStart),
-            style = TextStyle(color = Color(0xFF2462C2),
+            style = TextStyle(
+                color = Color(0xFF2462C2),
                 fontWeight = FontWeight.Bold,
                 fontSize = 32.sp
             )
@@ -68,11 +75,11 @@ fun Regist(navController: NavController, main: Activity) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             EditField(
-                label = "Email",
-                value = email,
-                onValueChanged = { email = it },
+                label = "name",
+                value = name,
+                onValueChanged = { name = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 ),
                 color = color,
@@ -81,12 +88,12 @@ fun Regist(navController: NavController, main: Activity) {
                     .fillMaxWidth()
             )
 
-            EditPassField(
-                label = "Password",
-                value = pass,
-                onValueChanged = { pass = it },
+            EditField(
+                label = "username",
+                value = username,
+                onValueChanged = { username = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 ),
                 color = color,
@@ -95,12 +102,12 @@ fun Regist(navController: NavController, main: Activity) {
                     .fillMaxWidth()
             )
 
-            EditPassField(
-                label = "Confirm Password",
-                value = confpass,
-                onValueChanged = { confpass = it },
+            EditField(
+                label = "sports",
+                value = sports,
+                onValueChanged = { sports = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 ),
                 color = color,
@@ -117,26 +124,37 @@ fun Regist(navController: NavController, main: Activity) {
 
             Button(
                 onClick = {
-                    if (email.isEmpty() || pass.isEmpty()) {
-                        errm = "Email or Passwords are blank, fill them and try again."
-                    } else if (!(pass.equals(confpass))) {
-                        errm = "Passwords don't match, try again."
-                    } else {
-                        auth.createUserWithEmailAndPassword(email, pass)
-                            .addOnCompleteListener(main) { task ->
-                                if (task.isSuccessful) {
-                                    navController.navigate(Screens.PostRegistForm.route)
-                                } else {
-                                    color = Color.Red
-                                }
-                            }
-                    }
+                    val query = usersRef.whereEqualTo("username", username)
+                    query.get()
+                        .addOnSuccessListener { documents ->
+                            if (documents.isEmpty) {
+                                val sportsArr = sports.split(", ")
+                                val user = hashMapOf(
+                                    "name" to name,
+                                    "username" to username,
+                                    "Sports" to sportsArr,
+                                    "email" to email
+                                )
 
-                },
+                                usersRef.add(user)
+                                    .addOnSuccessListener { documentReference ->
+                                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(TAG, "Error adding document", e)
+                                    }
+                            } else {
+                                errm = "Username already in use, choose another."
+                            }
+                        }
+                          },
                 modifier = Modifier.padding(top = 10.dp)
             ) {
-                Text("Regist", fontSize = 24.sp)
+                Text(text = "Submit", fontSize = 24.sp)
             }
+
+
         }
     }
+
 }

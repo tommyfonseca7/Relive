@@ -118,7 +118,7 @@ fun SignIn(navController: NavController, main: Activity) {
                         auth.signInWithEmailAndPassword(email, pass)
                             .addOnCompleteListener(main) { task ->
                                 if (task.isSuccessful) {
-                                    navController.navigate(Screens.Done.route)
+                                    navController.navigate(Screens.MemoriesScreen.route)
                                 } else {
                                     color = Red
                                     errm = "Your email or password is wrong"

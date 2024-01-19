@@ -3,8 +3,10 @@ package com.example.s
 
 data class User (
     val email : String = "",
-    val name : String = "",
-    val preferredSports : List<String> = emptyList()
+    var name : String = "",
+    var username : String = "",
+    var preferredSports : List<String> = emptyList(),
+    var friends : List<String> = emptyList()
 )
 
 /* Saving in the Database
