@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -100,10 +101,8 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                 )
             }
 
-            // Spacer to distribute space between the text and the icon
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Box for the icon
             Box(
                 modifier = Modifier
                     .wrapContentSize()
@@ -122,7 +121,20 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                 }
             }
         }
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Button(onClick = {navController.navigate(Screens.AddMemorie.route)}) {
+                Text(text = "Add Memory")
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Memorie", tint = Color.White)
+            }
+        }
     }
+
+
 }
 
 

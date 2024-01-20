@@ -92,7 +92,7 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         EditField(
-            label = "searchUsername",
+            label = "username",
             value = searchUsername,
             onValueChanged = { searchUsername = it },
             keyboardOptions = KeyboardOptions.Default.copy(

@@ -8,4 +8,5 @@ sealed class Screens (val route:String){
     object PostRegistForm : Screens("postregistform")
     object SearchUsers : Screens("searchusers")
     object MemoriesScreen : Screens("memoriesscreen")
+    object AddMemorie : Screens("addmemorie")
 }

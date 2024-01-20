@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.s.nav.screen.AddMemorie
 import com.example.s.nav.screen.Done
 import com.example.s.nav.screen.Edit
 import com.example.s.nav.screen.MemoriesScreen
@@ -46,6 +47,10 @@ fun NavGraph (navController: NavHostController, main: Activity){
 
         composable(Screens.SearchUsers.route) {
             SearchUsers(navController = navController, main = main)
+        }
+
+        composable(Screens.AddMemorie.route) {
+            AddMemorie(navController = navController, main = main)
         }
     }
 }
