@@ -1,5 +1,6 @@
 package com.example.s
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.s.nav.NavGraph
+import com.example.s.nav.screen.Camera
 import com.example.s.ui.theme.STheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -33,20 +35,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    STheme {
-        Greeting("Android")
+    fun changeToPhoto(){
+        val intent = Intent(this, Camera::class.java)
+        startActivity(intent)
     }
 }
+

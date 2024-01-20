@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.s.MainActivity
 import com.example.s.nav.screen.AddMemorie
 import com.example.s.nav.screen.Done
 import com.example.s.nav.screen.Edit
@@ -15,7 +16,7 @@ import com.example.s.nav.screen.SearchUsers
 import com.example.s.nav.screen.SignIn
 
 @Composable
-fun NavGraph (navController: NavHostController, main: Activity){
+fun NavGraph (navController: NavHostController, main: MainActivity){
     NavHost(
         navController = navController,
         startDestination = Screens.Sign.route)

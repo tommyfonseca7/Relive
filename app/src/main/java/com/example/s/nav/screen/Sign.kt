@@ -1,6 +1,8 @@
 package com.example.s.nav.screen
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.fonts.FontFamily
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -36,7 +38,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+import com.example.s.MainActivity
 import com.example.s.nav.Screens
 import com.example.s.utils.EditField
 import com.example.s.utils.EditPassField
@@ -47,7 +51,7 @@ import com.google.firebase.ktx.Firebase
 
 
 @Composable
-fun SignIn(navController: NavController, main: Activity) {
+fun SignIn(navController: NavController, main: MainActivity) {
     var auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
@@ -129,6 +133,15 @@ fun SignIn(navController: NavController, main: Activity) {
                 modifier = Modifier.padding(top = 10.dp)
             ) {
                 Text("Log in", fontSize = 24.sp)
+            }
+
+            Button(
+                onClick = {
+                    main.changeToPhoto()
+                },
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
+                Text("Photo", fontSize = 24.sp)
             }
             
             Spacer(modifier = Modifier.height(16.dp))

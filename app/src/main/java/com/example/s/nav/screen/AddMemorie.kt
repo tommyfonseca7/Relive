@@ -136,7 +136,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     }
 
 
-    fun parseApiResponse(apiResponse: String) : List<Match> {
+    /**fun parseApiResponse(apiResponse: String) : List<Match> {
         val competitionCode = when (selectedLeague) {
             FootballLeague.WORLD_CUP -> "WC"
             FootballLeague.CHAMPIONS_LEAGUE -> "CL"
@@ -156,7 +156,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
 
 
-    }
+    }*/
 
 
 
