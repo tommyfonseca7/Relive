@@ -70,8 +70,9 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
     val coroutineScope = rememberCoroutineScope()
     var auth = Firebase.auth
     var email = auth.currentUser?.email
+    var user = auth.currentUser
     val userDocumentId = remember { mutableStateOf<String?>(null) }
-
+    Log.d("mem","das")
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
     }
@@ -142,6 +143,17 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
             Button(onClick = {navController.navigate(Screens.AddMemorie.route)}) {
                 Text(text = "Add Memory")
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Memorie", tint = Color.White)
+            }
+            Button(onClick = {navController.navigate(Screens.Gallery.route
+                .replace(
+                    oldValue = "{sportType}",
+                    newValue = "Football")
+                .replace(
+                    oldValue = "{gameName}",
+                    newValue = "test")
+                // este parte serve para passar o tipo d edesporto e que jogo queremos ver
+            )}) {
+                Text(text = "Gallery")
             }
         }
     }

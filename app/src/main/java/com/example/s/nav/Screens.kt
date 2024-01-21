@@ -9,5 +9,6 @@ sealed class Screens (val route:String){
     object SearchUsers : Screens("searchusers")
     object MemoriesScreen : Screens("memoriesscreen")
     object AddMemorie : Screens("addmemorie")
+    object Gallery : Screens("gallery/{sportType}/{gameName}")
     object UserProfile : Screens("userprofile")
 }
