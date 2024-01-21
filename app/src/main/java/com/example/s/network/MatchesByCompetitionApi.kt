@@ -1,18 +1,83 @@
 package com.example.s.network
 
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.Path
+import retrofit2.http.Query
 
+private const val BASE_URL = "https://api.football-data.org/v4/"
+private const val API_KEY = "3376d91cfc6a4546908a824c66f4ba7b"
 
-private const val BASE_URL = "https://api.football-data.org/v4/competitions/"
+// Custom interceptor to add X-Auth-Token header to each request
+private val authInterceptor = Interceptor { chain ->
+    val request = chain.request().newBuilder()
+        .addHeader("X-Auth-Token", API_KEY)
+        .build()
+    chain.proceed(request)
+}
 
-private val picsumRetrofit = Retrofit.Builder()
-    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-    .baseUrl(BASE_URL)
+// Data class for representing the structure of each match in the API response
+@Serializable
+data class MatchInfo(
+    @SerialName("id")
+    val id: Long,
+    @SerialName("homeTeam")
+    val homeTeam: TeamInfo,
+    @SerialName("awayTeam")
+    val awayTeam: TeamInfo
+)
+
+@Serializable
+data class TeamInfo(
+    @SerialName("name")
+    val name: String
+)
+
+@Serializable
+data class MatchesApiResponse(
+    @SerialName("matches")
+    val matches: List<MatchInfo>
+)
+
+// Define the Retrofit service interface
+interface MatchesByCompetitionApi {
+    @GET("competitions/{competitionCode}/matches")
+    suspend fun getMatches(
+        @Path("competitionCode") competitionCode: String,
+        @Query("dateTo") dateTo: String,
+        @Query("dateFrom") dateFrom: String,
+        @Header("X-Auth-Token") apiKey: String = API_KEY
+    ): MatchesApiResponse
+}
+
+private val logger = HttpLoggingInterceptor().apply {
+    level = HttpLoggingInterceptor.Level.BODY
+}
+
+private val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(logger)
     .build()
 
-interface MatchesByCompetitionApi {
+// Singleton object for accessing the Retrofit service
+object MatchesApi {
+    private val json = Json { ignoreUnknownKeys = true }
 
+    val retrofitService: MatchesByCompetitionApi by lazy {
+        Retrofit.Builder()
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .build()
+            .create(MatchesByCompetitionApi::class.java)
+    }
 }

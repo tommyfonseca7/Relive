@@ -1,7 +1,8 @@
 package com.example.s.nav.screen
 
 import android.app.Activity
-import android.widget.DatePicker
+import android.nfc.Tag
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,16 +47,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.User
+import com.example.s.network.MatchInfo
+import com.example.s.network.MatchesApi
 import com.example.s.utils.EditField
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 
 
@@ -79,30 +81,6 @@ enum class FootballLeague {
 @Composable
 fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier =
     Modifier) {
-    @Serializable
-    data class Team(
-        @SerialName("name")
-        val name: String,
-    )
-    @Serializable
-    data class Match(
-        @SerialName("homeTeam")
-        val homeTeam: Team,
-        @SerialName("awayTeam")
-        val awayTeam: Team,
-        @SerialName("id")
-        val id: Long,
-
-        )
-    @Serializable
-    data class ApiResponse(
-        @SerialName("matches")
-        val matches: List<Match>,
-        // Add other fields as needed
-    )
-
-
-
 
     var selectedLeague by remember { mutableStateOf<FootballLeague?>(null) }
     var otherLeague by remember { mutableStateOf("") }
@@ -110,6 +88,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var awayClub by remember { mutableStateOf("") }
     val leagues = FootballLeague.values()
     var expanded by remember { mutableStateOf(false) }
+    var matches by remember { mutableStateOf<List<MatchInfo>?>(null) }
 
     val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -129,39 +108,10 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var auth = Firebase.auth
     var email = auth.currentUser?.email
     val userDocumentId = remember { mutableStateOf<String?>(null) }
+    var competitionCode by remember { mutableStateOf("") }
 
-
-    fun makeApiCall(selectedLeague : FootballLeague, selectedDate : String) {
-
-    }
-
-
-    /**fun parseApiResponse(apiResponse: String) : List<Match> {
-        val competitionCode = when (selectedLeague) {
-            FootballLeague.WORLD_CUP -> "WC"
-            FootballLeague.CHAMPIONS_LEAGUE -> "CL"
-            FootballLeague.BUNDESLIGA -> "BL1"
-            FootballLeague.EREDIVISIE -> "DED"
-            FootballLeague.CAMPEONATO_BRASILEIRO -> "BSA"
-            FootballLeague.PRIMERA_DIVISION -> "PD"
-            FootballLeague.LIGUE_1 -> "FL1"
-            FootballLeague.CHAMPIONSHIP -> "ELC"
-            FootballLeague.PRIMEIRA_LIGA -> "PPL"
-            FootballLeague.EUROPEAN_CHAMPIONSHIP -> "EC"
-            FootballLeague.SERIE_A -> "SA"
-            FootballLeague.PREMIER_LEAGUE -> "PL"
-            FootballLeague.COPA_LIBERTADORES -> "CLI"
-            else -> null
-        }
-
-
-
-    }*/
-
-
-
-
-
+    var selectedMatch by remember { mutableStateOf<MatchInfo?>(null) }
+    var expandedMatch by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(email) {
@@ -217,6 +167,22 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                             onClick = {
                                 selectedLeague = league
                                 expanded = false
+                                competitionCode = when (selectedLeague) {
+                                    FootballLeague.WORLD_CUP -> "WC"
+                                    FootballLeague.CHAMPIONS_LEAGUE -> "CL"
+                                    FootballLeague.BUNDESLIGA -> "BL1"
+                                    FootballLeague.EREDIVISIE -> "DED"
+                                    FootballLeague.CAMPEONATO_BRASILEIRO -> "BSA"
+                                    FootballLeague.PRIMERA_DIVISION -> "PD"
+                                    FootballLeague.LIGUE_1 -> "FL1"
+                                    FootballLeague.CHAMPIONSHIP -> "ELC"
+                                    FootballLeague.PRIMEIRA_LIGA -> "PPL"
+                                    FootballLeague.EUROPEAN_CHAMPIONSHIP -> "EC"
+                                    FootballLeague.SERIE_A -> "SA"
+                                    FootballLeague.PREMIER_LEAGUE -> "PL"
+                                    FootballLeague.COPA_LIBERTADORES -> "CLI"
+                                    else -> ""
+                                }
                             }
                         )
                     }
@@ -226,10 +192,13 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                     onClick = {
                         selectedLeague = FootballLeague.OTHER
                         expanded = false
+
                     }
                 )
             }
         }
+
+
 
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -284,11 +253,49 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = selectedDate.toString(),
-            color = Color.Red
-        )
+        Button(onClick = {
+            coroutineScope.launch {
+                try {
+                    Log.d("Api Request", "URL: ${MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).toString()}")
+                    matches = MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).matches
 
+                } catch (e : Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }) {
+            Text(text = "Search matches")
+        }
+
+
+
+        Box {
+            TextButton(onClick = { expandedMatch = true }) {
+                selectedMatch?.let { match ->
+                    Text(
+                        text = "${match.homeTeam.name} vs ${match.awayTeam.name}",
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
+            }
+
+            DropdownMenu(
+                expanded = expandedMatch,
+                onDismissRequest = { expandedMatch = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                // Iterate over matches and add them to the dropdown
+                matches?.forEach { match ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedMatch = match
+                            expandedMatch = false
+                        }, text = { Text(text = "${match.homeTeam.name} vs ${match.awayTeam.name}") }
+                    )
+                }
+            }
+        }
 
         Button(onClick = {
             // Handle the button click and the selected league or otherLeague value
@@ -302,7 +309,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 }
 
 private fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("yyyy/MM/dd")
+    val formatter = SimpleDateFormat("yyyy-MM-dd")
     return formatter.format(Date(millis))
 }
 
