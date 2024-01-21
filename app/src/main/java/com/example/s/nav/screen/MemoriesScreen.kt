@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -83,34 +84,30 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
+            Text(
+                text = "Memories",
                 modifier = Modifier
                     .weight(1f)
-            ) {
-                Text(
-                    text = "Memories",
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    style = TextStyle(
-                        color = Color(0xFF2462C2),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp
-                    )
+                    .padding(bottom = 16.dp),
+                style = TextStyle(
+                    color = Color(0xFF2462C2),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp
                 )
-            }
+            )
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Box(
+            Row(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .wrapContentWidth(align = Alignment.End)
+                    .align(Alignment.CenterVertically)
             ) {
                 IconButton(
                     onClick = {
+                        // Navegação para a tela de busca de usuários
                         navController.navigate(Screens.SearchUsers.route)
-
                     }
                 ) {
                     Icon(
@@ -119,8 +116,23 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                         tint = Color(0xFF2462C2)
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = {
+                        navController.navigate(Screens.UserProfile.route)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_profile),
+                        contentDescription = "Profile",
+                        tint = Color(0xFF2462C2)
+                    )
+                }
             }
         }
+    }
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -135,7 +147,7 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
     }
 
 
-}
+
 
 
 

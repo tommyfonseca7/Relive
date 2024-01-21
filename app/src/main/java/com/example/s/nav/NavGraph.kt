@@ -14,6 +14,7 @@ import com.example.s.nav.screen.PostRegistForm
 import com.example.s.nav.screen.Regist
 import com.example.s.nav.screen.SearchUsers
 import com.example.s.nav.screen.SignIn
+import com.example.s.nav.screen.UserProfile
 
 @Composable
 fun NavGraph (navController: NavHostController, main: MainActivity){
@@ -53,5 +54,9 @@ fun NavGraph (navController: NavHostController, main: MainActivity){
         composable(Screens.AddMemorie.route) {
             AddMemorie(navController = navController, main = main)
         }
+        composable(Screens.UserProfile.route) {
+            UserProfile(navController = navController, main = main)
+        }
+
     }
 }
