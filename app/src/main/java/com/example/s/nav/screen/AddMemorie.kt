@@ -1,8 +1,9 @@
 package com.example.s.nav.screen
 
 import android.app.Activity
-import android.nfc.Tag
+import android.content.ContentValues
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,16 +46,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.User
-import com.example.s.dataStructure.Post
+import com.example.s.nav.Screens
 import com.example.s.network.MatchInfo
 import com.example.s.network.MatchesApi
 import com.example.s.utils.EditField
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -90,7 +89,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var awayClub by remember { mutableStateOf("") }
     val leagues = FootballLeague.values()
     var expanded by remember { mutableStateOf(false) }
-    var matches by remember { mutableStateOf<List<MatchInfo>?>(emptyList()) }
+    var matches by remember { mutableStateOf<List<MatchInfo>?>(null) }
 
     val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -104,8 +103,10 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
     var searchUsername by remember { mutableStateOf("") }
     var foundUser by remember { mutableStateOf<User?>(null) }
+
     var color by remember { mutableStateOf(Color.LightGray) }
     val userRef = FirebaseFirestore.getInstance().collection("Users")
+    val memoriesRef = FirebaseFirestore.getInstance().collection("Memories")
     val coroutineScope = rememberCoroutineScope()
     var auth = Firebase.auth
     var email = auth.currentUser?.email
@@ -248,6 +249,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                     .fillMaxWidth()
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         DatePicker(state = datePickerState)
@@ -280,13 +282,14 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                 }
                 Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
             }
+
             DropdownMenu(
                 expanded = expandedMatch,
                 onDismissRequest = { expandedMatch = false },
                 modifier = Modifier.background(Color.White)
             ) {
                 // Iterate over matches and add them to the dropdown
-                matches!!.forEach { match ->
+                matches?.forEach { match ->
                     DropdownMenuItem(
                         onClick = {
                             selectedMatch = match
@@ -298,28 +301,66 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
         }
 
         Button(onClick = {
-            // Handle the button click and the selected league or otherLeague value
-            val selectedLeagueValue = selectedLeague ?: FootballLeague.OTHER
-            val leagueValue = if (selectedLeagueValue == FootballLeague.OTHER) otherLeague else selectedLeagueValue.name
-            // Perform further actions with the selected league value
-            coroutineScope.launch {
-                var result = MatchesApi.retrofitService.getInf(selectedMatch?.id.toString())
-                var p = Post(0,
-                    Firebase.auth.currentUser?.uid,
-                    Date(),
-                    emptyList(),
-                    selectedMatch?.id,
-                    result.home.crest,
-                    result.away.crest,
-                    result.scores.Score.homeScore,
-                    result.scores.Score.awayScore
-                )
-                Firebase.database.reference.child("memories").push().setValue(p)
-            }
+            if (selectedLeague == FootballLeague.OTHER) {
+                val title = homeClub + "Vs" + awayClub + "- " + selectedDate.toString()
+                val memory = hashMapOf(
+                    "title" to title,
+                    "dateOfCreation" to System.currentTimeMillis(),
+                    "homeTeam" to homeClub,
+                    "awayTeam" to awayClub,
+                    "date" to selectedDate.toString(),
+                    "userId" to userDocumentId.value
 
+
+                )
+                memoriesRef.add(memory)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }.addOnFailureListener { e ->
+                        Log.w(ContentValues.TAG, "Error adding document", e)
+                    }
+            } else {
+                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + "- " + selectedDate.toString()
+                val memory = hashMapOf(
+                    "title" to title,
+                    "dateOfCreation" to System.currentTimeMillis(),
+                    "homeTeam" to selectedMatch?.homeTeam?.name,
+                    "awayTeam" to selectedMatch?.awayTeam?.name,
+                    "date" to selectedDate.toString(),
+                    "matchId" to selectedMatch?.id,
+                    "userId" to userDocumentId.value
+                    )
+                memoriesRef.add(memory)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        coroutineScope.launch {
+                            if (addMemoryToUser(userDocumentId.value.toString(), documentReference.id)) {
+                                Toast.makeText(main.baseContext, "Memory added", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }.addOnFailureListener { e ->
+                        Log.w(ContentValues.TAG, "Error adding memory document", e)
+                    }
+            }
+            navController.navigate(Screens.MemoriesScreen.route)
         }) {
             Text(text = "Add Football Memory")
         }
+    }
+}
+
+
+private suspend fun addMemoryToUser(currUserId : String, memoryDocumentId : String) : Boolean {
+    val userRef = FirebaseFirestore.getInstance().collection("Users")
+
+    return try {
+        userRef
+            .document(currUserId)
+            .update("memories", FieldValue.arrayUnion(memoryDocumentId))
+            .await()
+        true
+    } catch (e : java.lang.Exception) {
+        false
     }
 }
 
