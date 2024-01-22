@@ -17,6 +17,8 @@ import com.example.s.nav.screen.Regist
 import com.example.s.nav.screen.SearchUsers
 import com.example.s.nav.screen.SignIn
 import com.example.s.nav.screen.UserProfile
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun NavGraph (navController: NavHostController, main: MainActivity){
@@ -27,7 +29,12 @@ fun NavGraph (navController: NavHostController, main: MainActivity){
     {
 
         composable(route = Screens.Sign.route){
-            SignIn(navController = navController, main = main )
+            if (Firebase.auth != null){
+                MemoriesScreen(navController = navController, main = main)
+            }else{
+                SignIn(navController = navController, main = main )
+            }
+
         }
 
         composable(route = Screens.Done.route){

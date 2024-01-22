@@ -18,6 +18,7 @@ import retrofit2.http.Query
 private const val BASE_URL = "https://api.football-data.org/v4/"
 private const val API_KEY = "3376d91cfc6a4546908a824c66f4ba7b"
 
+
 // Custom interceptor to add X-Auth-Token header to each request
 private val authInterceptor = Interceptor { chain ->
     val request = chain.request().newBuilder()
@@ -49,6 +50,34 @@ data class MatchesApiResponse(
     val matches: List<MatchInfo>
 )
 
+@Serializable
+data class TeamCrest(
+    @SerialName("crest")
+    val crest: String
+)
+
+@Serializable
+data class MatchScore(
+    @SerialName("home")
+    val homeScore: Int,
+    @SerialName("away")
+    val awayScore: Int
+)
+@Serializable
+data class FullScore(
+    @SerialName("fullTime")
+    val Score: MatchScore
+)
+@Serializable
+data class MemoryFrontResponse(
+    @SerialName("homeTeam")
+    val home: TeamCrest,
+    @SerialName("awayTeam")
+    val away: TeamCrest,
+    @SerialName("score")
+    val scores: FullScore
+)
+
 // Define the Retrofit service interface
 interface MatchesByCompetitionApi {
     @GET("competitions/{competitionCode}/matches")
@@ -58,6 +87,12 @@ interface MatchesByCompetitionApi {
         @Query("dateFrom") dateFrom: String,
         @Header("X-Auth-Token") apiKey: String = API_KEY
     ): MatchesApiResponse
+
+    @GET("matches/{competitionCode}")
+    suspend fun getInf(
+        @Path("competitionCode") competitionCode: String,
+        @Header("X-Auth-Token") apiKey: String = API_KEY
+    ): MemoryFrontResponse
 }
 
 private val logger = HttpLoggingInterceptor().apply {
