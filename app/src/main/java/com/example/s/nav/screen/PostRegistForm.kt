@@ -33,6 +33,7 @@ import com.example.s.utils.EditPassField
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.Timestamp
 
 @Composable
 fun PostRegistForm(navController: NavController, main: Activity, modifier: Modifier =
@@ -133,7 +134,8 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
                                     "name" to name,
                                     "username" to username,
                                     "Sports" to sportsArr,
-                                    "email" to email
+                                    "email" to email,
+                                    "registrationDate" to Timestamp.now()
                                 )
 
                                 usersRef.add(user)

@@ -1,12 +1,15 @@
 package com.example.s
 
+import com.google.firebase.Timestamp
+
 
 data class User (
     val email : String = "",
     var name : String = "",
     var username : String = "",
     var preferredSports : List<String> = emptyList(),
-    var friends : List<String> = emptyList()
+    var friends : List<String> = emptyList(),
+    var registrationDate: Timestamp? = null
 )
 
 /* Saving in the Database

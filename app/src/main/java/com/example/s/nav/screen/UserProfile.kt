@@ -3,7 +3,9 @@ package com.example.s.nav.screen
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -21,18 +25,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.s.R
 import com.example.s.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @Composable
@@ -87,28 +96,42 @@ fun DisplayProfileDetails(user: User) {
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            ) {
-                Column(
+            Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(
-                        text = "Name: ${user.name}",
+                val imageModifier = Modifier.size(100.dp)
+                .clip(CircleShape)
+                .border(2.dp, Color.Gray, CircleShape)
+
+                // Foto de perfil padrão
+                Image(
+                    painter = painterResource(id = R.drawable.ic_profile),
+                    contentDescription = "Default Profile",
+                    modifier = imageModifier
+                )
+
+                Text(
+                        text = "${user.name}",
                         style = MaterialTheme.typography.headlineMedium
                     )
                     Text(
-                        text = "Username: ${user.username}",
+                        text = "@${user.username}",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Text(
-                        text = "Email: ${user.email}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                val numberOfFriends = (user.friends as? List<*>)?.size ?: 0
+                Text(
+                    text = "Friends: $numberOfFriends",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                val registrationDate = user.registrationDate?.toDate()?.let { date ->
+                    val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                    formatter.format(date)
+                } ?: "Data desconhecida"
+                Text(
+                    text = "Member since: $registrationDate",
+                    style = MaterialTheme.typography.bodySmall
+                )
                 }
             }
         }
-    }
 }
