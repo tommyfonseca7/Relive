@@ -47,10 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.User
+import com.example.s.dataStructure.Post
 import com.example.s.network.MatchInfo
 import com.example.s.network.MatchesApi
 import com.example.s.utils.EditField
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -88,7 +90,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var awayClub by remember { mutableStateOf("") }
     val leagues = FootballLeague.values()
     var expanded by remember { mutableStateOf(false) }
-    var matches by remember { mutableStateOf<List<MatchInfo>?>(null) }
+    var matches by remember { mutableStateOf<List<MatchInfo>?>(emptyList()) }
 
     val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -246,7 +248,6 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                     .fillMaxWidth()
             )
         }
-
         Spacer(modifier = Modifier.height(16.dp))
 
         DatePicker(state = datePickerState)
@@ -279,14 +280,13 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                 }
                 Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
             }
-
             DropdownMenu(
                 expanded = expandedMatch,
                 onDismissRequest = { expandedMatch = false },
                 modifier = Modifier.background(Color.White)
             ) {
                 // Iterate over matches and add them to the dropdown
-                matches?.forEach { match ->
+                matches!!.forEach { match ->
                     DropdownMenuItem(
                         onClick = {
                             selectedMatch = match
@@ -302,6 +302,21 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
             val selectedLeagueValue = selectedLeague ?: FootballLeague.OTHER
             val leagueValue = if (selectedLeagueValue == FootballLeague.OTHER) otherLeague else selectedLeagueValue.name
             // Perform further actions with the selected league value
+            coroutineScope.launch {
+                var result = MatchesApi.retrofitService.getInf(selectedMatch?.id.toString())
+                var p = Post(0,
+                    Firebase.auth.currentUser?.uid,
+                    Date(),
+                    emptyList(),
+                    selectedMatch?.id,
+                    result.home.crest,
+                    result.away.crest,
+                    result.scores.Score.homeScore,
+                    result.scores.Score.awayScore
+                )
+                Firebase.database.reference.child("memories").push().setValue(p)
+            }
+
         }) {
             Text(text = "Add Football Memory")
         }
