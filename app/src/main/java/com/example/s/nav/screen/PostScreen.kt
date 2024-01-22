@@ -42,9 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.s.R
+import com.example.s.User
 import com.example.s.dataStructure.Post
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
@@ -54,21 +56,30 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
-    var db = Firebase.database
-    db.reference.child("memories").get().addOnSuccessListener { list ->
-        Log.d("databasesize", list.children.count().toString())
-        for (item in list.children){
-            var cast = item.getValue(Post::class.java)
-            if (cast != null && cast.userUID == Firebase.auth.currentUser?.uid){
-                if (!postList.contains(cast)){
-                    postList = postList.toMutableList().apply {
-                        add(cast) }
+    val docRef = Firebase.firestore.collection("Users").document(Firebase.auth.currentUser?.uid!!)
+    docRef.get().addOnSuccessListener { document ->
+        if (document != null) {
+
+            var user = document.toObject(User::class.java)
+            Log.d("fdas",user?.email.toString()!!)
+            if (user != null){
+                Log.d("fdaeqws","dsewqa")
+                var db = Firebase.database
+                db.reference.child("memories").get().addOnSuccessListener { list ->
+                    for (item in list.children){
+                        Log.d("fdas","dsa")
+                        var cast = item.getValue(Post::class.java)
+                        if (cast != null && (cast.userUID == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userUID))){
+                            if (!postList.contains(cast)){
+                                postList = postList.toMutableList().apply {
+                                    add(cast) }
+                            }
+                        }
+                    }
                 }
-
-
             }
-        }
 
+        }
     }
 
     ListALl(postList = postList)

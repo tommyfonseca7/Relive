@@ -135,16 +135,19 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
                                     "username" to username,
                                     "Sports" to sportsArr,
                                     "email" to email,
+                                    "friends" to emptyList<String>(),
                                     "registrationDate" to Timestamp.now()
                                 )
+                                if (Firebase.auth.uid != null){
+                                    usersRef.document(Firebase.auth.uid!!).set(user)
+                                        .addOnSuccessListener { documentReference ->
 
-                                usersRef.add(user)
-                                    .addOnSuccessListener { documentReference ->
-                                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(TAG, "Error adding document", e)
-                                    }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w(TAG, "Error adding document", e)
+                                        }
+                                }
+
                             } else {
                                 errm = "Username already in use, choose another."
                             }
