@@ -1,5 +1,6 @@
 package com.example.s.nav.screen
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.widget.Toast
@@ -11,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -32,9 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.s.R
 import com.example.s.User
-import com.example.s.nav.Screens
 import com.example.s.utils.EditField
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
@@ -44,9 +40,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier =
     Modifier
@@ -59,6 +55,8 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
     var auth = Firebase.auth
     var email = auth.currentUser?.email
     val userDocumentId = remember { mutableStateOf<String?>(null) }
+    val userData = remember { mutableStateOf<User?>(null) }
+    
 
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
@@ -104,6 +102,7 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
         )
+        var opt by remember { mutableStateOf(false) }
 
         Button(onClick = {
             if (searchUsername.isNotEmpty()) {
@@ -132,6 +131,10 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
         }
 
 
+        var friendId by remember {
+            mutableStateOf("")
+        }
+
         foundUser?.let { user ->
             Column(
                 modifier = Modifier
@@ -140,19 +143,63 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
             ) {
                 Text(text = "Name: ${user.name}")
                 Text(text = "Username: ${user.username}")
-
-                Button(onClick = {
-                    coroutineScope.launch {
-                        if (addUserAsfriend(user, currUserID = userDocumentId.value.toString())) {
-                            Toast.makeText(main.baseContext, "User added", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(main.baseContext, "Error adding user", Toast.LENGTH_SHORT).show()
+                
+                coroutineScope.launch {
+                    val user1 = userRef.document(userDocumentId.value.toString()).get().await().toObject(User::class.java)
+                    if (user1 != null) {
+                        friendId = getDocumentIdByEmail(user.email).toString()
+                        for ( s in user1.friends) {
+                            if (s == friendId) {
+                                opt = true
+                            }
                         }
                     }
-
-                }) {
-                    Text(text = "Add as friend")
                 }
+
+                if (opt) {
+                    Button(onClick = {
+                        userRef
+                            .document(userDocumentId.value.toString())
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                val currFriendList = documentSnapshot.get("friends") as? List<String> ?: emptyList()
+                                val updatedList = currFriendList.toMutableList().apply {
+                                    remove(friendId)
+                                }
+                                userRef
+                                    .document(userDocumentId.value.toString())
+                                    .update("friends", updatedList)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(main.baseContext, "${user.username} removed as friend", Toast.LENGTH_SHORT).show()
+                                        opt = false
+                                    }
+                            }
+
+                    }) {
+                        Text(text = "Remove as friend")
+                    }
+
+                } else {
+                    Button(onClick = {
+                        coroutineScope.launch {
+                            if (addUserAsfriend(user, currUserID = userDocumentId.value.toString())) {
+                                Toast.makeText(main.baseContext, "User added", Toast.LENGTH_SHORT).show()
+                                opt = true
+                            } else {
+                                Toast.makeText(main.baseContext, "Error adding user", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                    }) {
+                        Text(text = "Add as friend")
+                    }
+                }
+
+
+                
+                
+
+                
             }
         }
 
