@@ -21,14 +21,13 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun NavGraph (navController: NavHostController, main: MainActivity){
-    var flag = false
     NavHost(
         navController = navController,
         startDestination = Screens.Sign.route)
     {
 
         composable(route = Screens.Sign.route){
-            if (Firebase.auth != null){
+            if (Firebase.auth.currentUser != null){
                 MemoriesScreen(navController = navController, main = main)
             }else{
                 SignIn(navController = navController, main = main )
