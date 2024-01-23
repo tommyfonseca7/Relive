@@ -87,6 +87,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var otherLeague by remember { mutableStateOf("") }
     var homeClub by remember { mutableStateOf("") }
     var awayClub by remember { mutableStateOf("") }
+
     val leagues = FootballLeague.values()
     var expanded by remember { mutableStateOf(false) }
     var matches by remember { mutableStateOf<List<MatchInfo>?>(null) }
@@ -302,7 +303,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
         Button(onClick = {
             if (selectedLeague == FootballLeague.OTHER) {
-                val title = homeClub + "Vs" + awayClub + "- " + selectedDate.toString()
+                val title = homeClub + "Vs" + awayClub + " - " + selectedDate.toString()
                 val memory = hashMapOf(
                     "title" to title,
                     "dateOfCreation" to System.currentTimeMillis(),
@@ -320,12 +321,14 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
                         Log.w(ContentValues.TAG, "Error adding document", e)
                     }
             } else {
-                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + "- " + selectedDate.toString()
+                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + " - " + selectedDate.toString()
                 val memory = hashMapOf(
                     "title" to title,
                     "dateOfCreation" to System.currentTimeMillis(),
                     "homeTeam" to selectedMatch?.homeTeam?.name,
+                    "homeTeamCrest" to selectedMatch?.homeTeam?.crest,
                     "awayTeam" to selectedMatch?.awayTeam?.name,
+                    "awayTeamCrest" to selectedMatch?.awayTeam?.crest,
                     "date" to selectedDate.toString(),
                     "matchId" to selectedMatch?.id,
                     "userId" to userDocumentId.value

@@ -119,4 +119,7 @@ dependencies {
     //GPS
     implementation ("com.google.android.gms:play-services-location:19.0.1")
 
+    implementation("io.coil-kt:coil-compose:1.3.2")
+    implementation("io.coil-kt:coil-base:1.3.2")
+
 }
