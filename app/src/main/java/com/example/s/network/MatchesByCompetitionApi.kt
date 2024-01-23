@@ -90,6 +90,7 @@ interface MatchesByCompetitionApi {
         @Path("competitionCode") competitionCode: String,
         @Header("X-Auth-Token") apiKey: String = API_KEY
     ): MemoryFrontResponse
+
 }
 
 private val logger = HttpLoggingInterceptor().apply {

@@ -99,11 +99,17 @@ fun ListALl(postList: List<Post>){
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun PostListItem(p: Post, coroutineScope: CoroutineScope){
+    var homeScore by remember {
+        mutableStateOf(0)
+    }
+    var awayScore by remember {
+        mutableStateOf(0)
+    }
     coroutineScope.launch {
         try {
             var result = MatchesApi.retrofitService.getInf(p.matchId.toString())
-            p.homeScore = result.scores.Score.homeScore
-            p.awayScore = result.scores.Score.awayScore
+            homeScore = result.scores.Score.homeScore
+            awayScore = result.scores.Score.awayScore
         }catch (e :Exception){
 
         }
@@ -136,7 +142,7 @@ fun PostListItem(p: Post, coroutineScope: CoroutineScope){
                                 .size(50.dp)
                                 .wrapContentHeight()
                         )
-                        Text(text = p.homeScore.toString()
+                        Text(text = homeScore.toString()
                             , fontSize = 30.sp)
                     }
                     Row {
@@ -148,7 +154,7 @@ fun PostListItem(p: Post, coroutineScope: CoroutineScope){
                                 .size(50.dp)
                                 .wrapContentHeight()
                         )
-                        Text(text = p.awayScore.toString(),
+                        Text(text = awayScore.toString(),
                             fontSize = 30.sp)
                     }
                 }
