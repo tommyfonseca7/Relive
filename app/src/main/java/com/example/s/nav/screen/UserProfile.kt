@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -187,15 +190,26 @@ fun TopSection(user: User, navController: NavController) {
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-            }
-            Row {
-                TextButton(onClick = {
-                    auth.signOut()
-                    navController.navigate(Screens.Sign.route)
-                }) {
-                    Text("Log out", fontSize = 24.sp)
+                TextButton(
+                    onClick = {
+                        auth.signOut()
+                        navController.navigate(Screens.Sign.route)
+                    },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20))
+                        .size(48.dp)
+                        .background(Color(0xFF2462C2))
+
+
+                ) {
+                    Text(
+                        "Log out",
+                        fontSize = 10.sp,
+                        color = Color.White,
+                    )
                 }
             }
+
         }
     }
 }
