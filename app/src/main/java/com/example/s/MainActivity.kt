@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
@@ -27,12 +28,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.s.dataStructure.Stat
 import com.example.s.nav.NavGraph
 import com.example.s.nav.Screens
 import com.example.s.nav.screen.Camera
+import com.example.s.nav.screen.MemoryDetail
 import com.example.s.ui.theme.STheme
 
 data class BottomNavigationItem(
@@ -45,6 +49,8 @@ data class BottomNavigationItem(
 class MainActivity : ComponentActivity() {
 
     lateinit var  navController :NavHostController
+    val stat : Stat by mutableStateOf(Stat())
+    var screen : Int by mutableStateOf(0)
 
     val items = listOf(
         BottomNavigationItem(
@@ -92,12 +98,10 @@ class MainActivity : ComponentActivity() {
             mutableStateOf(0)
         }
 
-        val currentRoute = currentRoute(navController)
-
         Scaffold(
             bottomBar = {
-                if (shouldShowBottomBar(currentRoute)){
-                    NavigationBar {
+                if (screen==1){
+                    NavigationBar(modifier = Modifier.height(70.dp)) {
                         items.forEachIndexed { index, item ->
                             NavigationBarItem(
                                 selected = selectedItemIndex == index,
@@ -129,9 +133,17 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }){ contentPadding ->
-            Log.d("dsa", contentPadding.toString())
-            NavGraph(navController = navController, this)
+                try {
+                    Log.d("dsa", contentPadding.toString())
+
+                }catch (e:Exception){
+
+                }
+            NavGraph(navController = navController, this, p=stat)
         }
+    }
+    fun change(i:Int){
+        screen = i
     }
 }
 

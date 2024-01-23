@@ -19,7 +19,7 @@ data class Statistics (
     var redCards: Int
 )
 
-fun GenerateStatistics(goal:Int) : Statistics{
+fun GenerateStatistics() : Statistics{
     var random = Random
     return Statistics (
         cornerKicks = random.nextInt(0, 15),
@@ -31,7 +31,7 @@ fun GenerateStatistics(goal:Int) : Statistics{
         saves = random.nextInt(0, 10),
         throwIns = random.nextInt(0, 10),
         shots = random.nextInt(0, 15),
-        shotsOnGoal =goal,
+        shotsOnGoal =random.nextInt(0, 10),
         shotsOffGoal = random.nextInt(0, 10),
         yellowCards = random.nextInt(0, 10),
         yellowRedCards = random.nextInt(0, 5),

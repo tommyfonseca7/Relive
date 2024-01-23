@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.R
 import com.example.s.User
+import com.example.s.dataStructure.Post
+import com.example.s.dataStructure.Stat
 import com.example.s.nav.Screens
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,7 +45,8 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modifier =
-    Modifier) {
+    Modifier, p : Stat
+) {
 
     var searchUsername by remember { mutableStateOf("") }
     var foundUser by remember { mutableStateOf<User?>(null) }
@@ -108,7 +111,7 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                 .wrapContentSize(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            PostScreen()
+            PostScreen(navController,p=p)
             Button(onClick = {navController.navigate(Screens.AddMemorie.route)}) {
                 Text(text = "Add Memory")
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Memorie", tint = Color.White)

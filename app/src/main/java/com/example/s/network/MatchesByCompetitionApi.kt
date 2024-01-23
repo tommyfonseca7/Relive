@@ -69,10 +69,28 @@ data class FullScore(
     @SerialName("fullTime")
     val Score: MatchScore
 )
+
+@Serializable
+data class League(
+    @SerialName("name")
+    val name: String
+)
+
+@Serializable
+data class Country(
+    @SerialName("name")
+    val name: String
+)
 @Serializable
 data class MemoryFrontResponse(
     @SerialName("score")
-    val scores: FullScore
+    val scores: FullScore,
+    @SerialName("venue")
+    val venue:String,
+    @SerialName("competition")
+    val league:League,
+    @SerialName("area")
+    val country:Country
 )
 
 // Define the Retrofit service interface

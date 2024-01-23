@@ -36,10 +36,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.s.R
 import com.example.s.User
 import com.example.s.dataStructure.Post
+import com.example.s.dataStructure.Stat
+import com.example.s.nav.Screens
 import com.example.s.network.MatchesApi
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -50,12 +53,12 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifier =
-    Modifier, sportType: String, gameName: String*/
+fun PostScreen(navController: NavController, p:Stat
 ) {
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
+    Log.d("cast","dssaddas")
     val db =Firebase.firestore
     val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
     docRef.get().addOnSuccessListener { document ->
@@ -66,9 +69,9 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
                 db.collection("Memories").get().addOnSuccessListener { list ->
                     for (item in list){
                         var cast = item.toObject(Post::class.java)
-                        Log.d("id", cast.userId.toString())
-                        if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
 
+                        if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
+                            Log.d("ids", cast.matchId.toString())
                             if (!postList.contains(cast)){
                                 postList = postList.toMutableList().apply {
                                     add(cast) }
@@ -81,24 +84,24 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
         }
     }
 
-    ListALl(postList = postList)
+    ListALl(navController,postList = postList, p)
 }
 
 @Composable
-fun ListALl(postList: List<Post>){
+fun ListALl(navController: NavController,postList: List<Post>, stat:Stat){
     val coroutineScope = rememberCoroutineScope()
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
     {
         items(postList){ p ->
-            PostListItem(p = p, coroutineScope = coroutineScope)
+            PostListItem(navController = navController,p = p, coroutineScope = coroutineScope, stat = stat)
         }
     }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun PostListItem(p: Post, coroutineScope: CoroutineScope){
+fun PostListItem(navController: NavController,p: Post, coroutineScope: CoroutineScope, stat:Stat){
     var homeScore by remember {
         mutableStateOf(0)
     }
@@ -110,6 +113,9 @@ fun PostListItem(p: Post, coroutineScope: CoroutineScope){
             var result = MatchesApi.retrofitService.getInf(p.matchId.toString())
             homeScore = result.scores.Score.homeScore
             awayScore = result.scores.Score.awayScore
+            p.leagueName = result.league.name
+            p.venue = result.venue
+            p.country = result.country.name
         }catch (e :Exception){
 
         }
@@ -120,7 +126,11 @@ fun PostListItem(p: Post, coroutineScope: CoroutineScope){
             .fillMaxWidth()
             .clickable(onClick = { ->
                 //onclick function
+                p.awayScore = awayScore
+                p.homeScore = homeScore
 
+                stat.p = p
+                navController.navigate(Screens.Detail.route)
             }),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
