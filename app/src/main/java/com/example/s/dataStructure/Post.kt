@@ -14,4 +14,8 @@ data class Post (
     var venue : String? = "",
     var country : String? = "",
     var docId : String? = ""
+    val homeTeam: String = "",
+    val awayTeam: String = "",
+    val title: String = "",
+
     )

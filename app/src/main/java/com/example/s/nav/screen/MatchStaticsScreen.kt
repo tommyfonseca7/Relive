@@ -44,6 +44,11 @@ fun MemoryDetail(navController: NavController, modifier: Modifier =
 ){
     var s1 = GenerateStatistics()
     var s2 = GenerateStatistics()
+    var random = Random
+    val ballPossesionHome = random.nextInt(0,50)
+    val ballPossesionAway = 100 - ballPossesionHome
+    s1.ballPossession = ballPossesionHome
+    s2.ballPossession = ballPossesionAway
     Column {
         Card(modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)

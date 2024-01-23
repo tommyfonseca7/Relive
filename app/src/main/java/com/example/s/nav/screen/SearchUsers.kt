@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.s.User
+import com.example.s.dataStructure.User
 import com.example.s.utils.EditField
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
@@ -145,7 +145,8 @@ fun SearchUsers(navController: NavController, main: Activity, modifier: Modifier
                 Text(text = "Username: ${user.username}")
                 
                 coroutineScope.launch {
-                    val user1 = userRef.document(userDocumentId.value.toString()).get().await().toObject(User::class.java)
+                    val user1 = userRef.document(userDocumentId.value.toString()).get().await().toObject(
+                        User::class.java)
                     if (user1 != null) {
                         friendId = getDocumentIdByEmail(user.email).toString()
                         for ( s in user1.friends) {

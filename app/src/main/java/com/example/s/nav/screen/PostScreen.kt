@@ -1,7 +1,6 @@
 package com.example.s.nav.screen
 
 import android.annotation.SuppressLint
-import android.icu.text.DateFormat
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -22,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,18 +39,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.s.R
-import com.example.s.User
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
+import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.example.s.network.MatchesApi
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.AbstractCoroutine
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun PostScreen(navController: NavController, p:Stat
@@ -108,6 +108,11 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
     }
     var awayScore by remember {
         mutableStateOf(0)
+    }
+    var user by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(p.userId) {
+        user = getUserById(p.userId.toString())
     }
     coroutineScope.launch {
         try {
@@ -179,19 +184,45 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                             .fillMaxWidth()
                             .height(145.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .alpha(0.5f))
+                            .alpha(0.5f)
+                    )
 
                     p.date?.let {
+                        // Text aligned to the top end
                         Text(
                             text = it,
                             fontSize = 30.sp,
                             modifier = Modifier.align(Alignment.TopEnd)
                         )
                     }
+
+                    user?.let {
+                        Text(
+                            text = "@${user!!.username}",
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp)
+                        )
+                    }
+
+
                 }
 
             }
         }
+
+}
+
+private suspend fun getUserById(userId : String) : User? {
+    val userRef = FirebaseFirestore.getInstance().collection("Users")
+    val user = userRef
+        .document(userId)
+        .get()
+        .await()
+        .toObject(User::class.java)
+
+    return user
 
 }
 
