@@ -1,7 +1,7 @@
 package com.example.s.nav.screen
 
+import android.annotation.SuppressLint
 import android.icu.text.DateFormat
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,17 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +40,14 @@ import coil.compose.AsyncImage
 import com.example.s.R
 import com.example.s.User
 import com.example.s.dataStructure.Post
+import com.example.s.network.MatchesApi
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.AbstractCoroutine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifier =
@@ -66,7 +66,9 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
                 db.collection("Memories").get().addOnSuccessListener { list ->
                     for (item in list){
                         var cast = item.toObject(Post::class.java)
-                        if (cast != null && (cast.userUID == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userUID))){
+                        Log.d("id", cast.userId.toString())
+                        if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
+
                             if (!postList.contains(cast)){
                                 postList = postList.toMutableList().apply {
                                     add(cast) }
@@ -84,25 +86,35 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
 
 @Composable
 fun ListALl(postList: List<Post>){
-
+    val coroutineScope = rememberCoroutineScope()
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
     {
         items(postList){ p ->
-            PostListItem(p = p)
+            PostListItem(p = p, coroutineScope = coroutineScope)
         }
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun PostListItem(p: Post){
+fun PostListItem(p: Post, coroutineScope: CoroutineScope){
+    coroutineScope.launch {
+        try {
+            var result = MatchesApi.retrofitService.getInf(p.matchId.toString())
+            p.homeScore = result.scores.Score.homeScore
+            p.awayScore = result.scores.Score.awayScore
+        }catch (e :Exception){
 
+        }
+    }
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
             .clickable(onClick = { ->
                 //onclick function
+
             }),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
@@ -117,7 +129,7 @@ fun PostListItem(p: Post){
                 ) {
                     Row(modifier = Modifier.padding(bottom = 10.dp)) {
                         AsyncImage(
-                            model = p.homeCrest,
+                            model = p.homeTeamCrest,
                             contentScale = ContentScale.Crop,
                             contentDescription = null,
                             modifier = Modifier
@@ -129,7 +141,7 @@ fun PostListItem(p: Post){
                     }
                     Row {
                         AsyncImage(
-                            model = p.awayCrest,
+                            model = p.awayTeamCrest,
                             contentScale = ContentScale.Crop,
                             contentDescription = null,
                             modifier = Modifier
@@ -150,11 +162,13 @@ fun PostListItem(p: Post){
                             .clip(RoundedCornerShape(16.dp))
                             .alpha(0.5f))
 
-                    Text(
-                        text = DateFormat.getPatternInstance(DateFormat.ABBR_MONTH_DAY).format(p.date),
-                        fontSize = 30.sp,
-                        modifier = Modifier.align(Alignment.TopEnd)
-                    )
+                    p.date?.let {
+                        Text(
+                            text = it,
+                            fontSize = 30.sp,
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        )
+                    }
                 }
 
             }

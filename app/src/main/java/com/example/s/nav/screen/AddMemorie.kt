@@ -124,7 +124,6 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()

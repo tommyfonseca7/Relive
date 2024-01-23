@@ -71,10 +71,6 @@ data class FullScore(
 )
 @Serializable
 data class MemoryFrontResponse(
-    @SerialName("homeTeam")
-    val home: TeamCrest,
-    @SerialName("awayTeam")
-    val away: TeamCrest,
     @SerialName("score")
     val scores: FullScore
 )

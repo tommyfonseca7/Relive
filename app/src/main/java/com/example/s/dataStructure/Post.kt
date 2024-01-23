@@ -1,15 +1,13 @@
 package com.example.s.dataStructure
 
-import java.util.Date
-
 data class Post (
     val id : Int? = 0,
-    val userUID : String? = "",
-    val date : Date? = null,
+    val userId : String? = "",
+    val date : String? = null,
     val images : List<Int>? = null,
     val matchId: Long? = 0,
-    val homeCrest : String? = null,
-    val awayCrest : String? = null,
-    val homeScore : Int? = 0,
-    val awayScore : Int? = 0
+    val homeTeamCrest : String? = null,
+    val awayTeamCrest : String? = null,
+    var homeScore : Int? = 0,
+    var awayScore : Int? = 0
     )
