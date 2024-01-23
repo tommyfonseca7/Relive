@@ -12,5 +12,6 @@ data class Post (
     var awayScore : Int? = 0,
     var leagueName : String? = "",
     var venue : String? = "",
-    var country : String? = ""
+    var country : String? = "",
+    var docId : String? = ""
     )

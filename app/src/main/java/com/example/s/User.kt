@@ -10,7 +10,8 @@ data class User (
     var Sports : List<String> = emptyList(),
     var friends : List<String> = emptyList(),
     var registrationDate: Timestamp? = null,
-    var profileImageUrl: String? = null
+    var profileImageUrl: String? = null,
+    var memories: List<String>? = emptyList()
 )
 
 /* Saving in the Database

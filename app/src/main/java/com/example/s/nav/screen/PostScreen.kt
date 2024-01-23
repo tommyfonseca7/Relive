@@ -73,6 +73,7 @@ fun PostScreen(navController: NavController, p:Stat
                         if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
                             if (!checkList.contains(item.id)){
                                 checkList.add(item.id)
+                                cast.docId = item.id
                                 postList = postList.toMutableList().apply {
                                     add(cast) }
                             }
@@ -169,6 +170,7 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                             fontSize = 30.sp)
                     }
                 }
+                
                 Box(modifier = Modifier.fillMaxWidth()){
                     Image(painter = painterResource(id = R.drawable.white),
                         contentDescription = "",

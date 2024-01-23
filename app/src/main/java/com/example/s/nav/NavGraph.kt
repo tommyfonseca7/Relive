@@ -82,13 +82,11 @@ fun NavGraph (navController: NavHostController, main: MainActivity, p:Stat){
             main.change(1)
             UserProfile(navController = navController, main = main)
         }
-        composable(route = Screens.Gallery.route+ "?sportType={sportType}"+ "?gameName={gameName}"){navBackStack ->
+        composable(route = Screens.Gallery.route + "?gameName={gameName}"){navBackStack ->
             //extracting the argument
             main.change(1)
-            var type: String = navBackStack.arguments?.getString("sportType")!!
             var name: String = navBackStack.arguments?.getString("gameName")!!
-            Log.d("dsad","dsa")
-            GalleryScreen(navController = navController, main = main, sportType = type, gameName = name)
+            GalleryScreen(navController = navController, main = main, gameName = name)
         }
         composable(Screens.Detail.route) {
             main.change(1)

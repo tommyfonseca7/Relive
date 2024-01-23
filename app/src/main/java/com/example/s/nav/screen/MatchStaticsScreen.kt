@@ -36,6 +36,7 @@ import com.example.s.R
 import com.example.s.dataStructure.GenerateStatistics
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
+import com.example.s.nav.Screens
 
 @Composable
 fun MemoryDetail(navController: NavController, modifier: Modifier =
@@ -56,14 +57,29 @@ fun MemoryDetail(navController: NavController, modifier: Modifier =
             shape = RoundedCornerShape(corner = CornerSize(16.dp))
         ) {
             Column {
-                Image(painter = painterResource(id = R.drawable.pic2),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .alpha(0.5f))
+                    Box (modifier =  Modifier.clickable(onClick = { ->
+                            p.p?.docId?.let {
+                                navController.navigate(Screens.Gallery.route
+                                    .replace(
+                                        oldValue = "{gameName}",
+                                        newValue = it
+                                    ))
+                            }
+                    })){
+                        Image(painter = painterResource(id = R.drawable.white),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .alpha(0.5f))
+                        Text(text = "There is click here to upload your menories",
+                            fontSize = 30.sp,
+                            modifier = Modifier.align(Alignment.Center))
+                    }
+
+
                 Row (modifier = Modifier
                     .align(Alignment.CenterHorizontally)){
                     AsyncImage(
@@ -158,7 +174,7 @@ fun ShowStatics(home:Int,away:Int, title:String){
                 Divider(color = c2,
                     thickness = 1.dp,
                     modifier = Modifier
-                        .fillMaxWidth(1-frag)
+                        .fillMaxWidth(1 - frag)
                         .align(Alignment.CenterStart)
                         .padding(start = 1.dp))
 

@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -47,10 +48,13 @@ import java.io.File
 
     @Composable
     fun GalleryScreen(navController: NavController, main: Activity, modifier: Modifier =
-        Modifier, sportType: String, gameName: String
+        Modifier, gameName: String
     ) {
         var imageUris by remember {
             mutableStateOf<List<Uri>>(ArrayList())
+        }
+        var count by remember {
+            mutableStateOf(0)
         }
         var storage = Firebase.storage
         val user = Firebase.auth.currentUser
@@ -61,17 +65,31 @@ import java.io.File
                 for (uri in it){
                     val storageReference = Firebase.storage
                         .getReference(user!!.uid)
-                        .child(sportType)
                         .child(gameName)
-                        .child(uri.lastPathSegment!!)
+                        .child(count.toString() + uri.lastPathSegment!!)
+                    count++
                     putImageInStorage(storageReference, uri,"")
                     imageUris = imageUris.toMutableList().apply {
                         add(uri) }
                 }
+                var temp = ArrayList<Uri>()
+                storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
+                    for (item in items.items) {
+                        count = items.items.size
+                        item.downloadUrl.addOnSuccessListener { uri ->
+                            temp.add(uri)
+                        }
+                    }
+                }
+                Firebase.firestore.collection("Memories").document(gameName)
+                    .update(mapOf(
+                        "images" to temp
+                    ))
             }
         )
-            storage.getReference(user!!.uid).child(sportType).child(gameName).listAll().addOnSuccessListener { items ->
+            storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
                 for (item in items.items) {
+                    count = items.items.size
                     item.downloadUrl.addOnSuccessListener { uri ->
                         if (!imageUris.contains(uri)){
                             imageUris = imageUris.toMutableList().apply {
