@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,10 +45,12 @@ import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.example.s.network.MatchesApi
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun PostScreen(navController: NavController, p:Stat
@@ -104,6 +107,11 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
     }
     var awayScore by remember {
         mutableStateOf(0)
+    }
+    var user by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(p.userId) {
+        user = getUserById(p.userId.toString())
     }
     coroutineScope.launch {
         try {
@@ -165,27 +173,55 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                             fontSize = 30.sp)
                     }
                 }
-                Box(modifier = Modifier.fillMaxWidth()){
-                    Image(painter = painterResource(id = R.drawable.pic2),
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    // Your existing Image code
+                    Image(
+                        painter = painterResource(id = R.drawable.pic2),
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(145.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .alpha(0.5f))
+                            .alpha(0.5f)
+                    )
 
                     p.date?.let {
+                        // Text aligned to the top end
                         Text(
                             text = it,
                             fontSize = 30.sp,
                             modifier = Modifier.align(Alignment.TopEnd)
                         )
                     }
+
+                    user?.let {
+                        Text(
+                            text = "@${user!!.username}",
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp)
+                        )
+                    }
+
+
                 }
 
             }
         }
+
+}
+
+private suspend fun getUserById(userId : String) : User? {
+    val userRef = FirebaseFirestore.getInstance().collection("Users")
+    val user = userRef
+        .document(userId)
+        .get()
+        .await()
+        .toObject(User::class.java)
+
+    return user
 
 }
 
