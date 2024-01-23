@@ -61,50 +61,49 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
+    Column {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp)
         ) {
-            Text(
-                text = "Memories",
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = 16.dp),
-                style = TextStyle(
-                    color = Color(0xFF2462C2),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp
-                )
-            )
-
             Row(
                 modifier = Modifier
-                    .wrapContentWidth(align = Alignment.End)
-                    .align(Alignment.CenterVertically)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(
-                    onClick = {
-                        // Navegação para a tela de busca de usuários
-                        navController.navigate(Screens.SearchUsers.route)
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_group_add_24),
-                        contentDescription = "add friend",
-                        tint = Color(0xFF2462C2)
+                Text(
+                    text = "Memories",
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 16.dp),
+                    style = TextStyle(
+                        color = Color(0xFF2462C2),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 32.sp
                     )
+                )
+
+                Row(
+                    modifier = Modifier
+                        .wrapContentWidth(align = Alignment.End)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    IconButton(
+                        onClick = {
+                            // Navegação para a tela de busca de usuários
+                            navController.navigate(Screens.SearchUsers.route)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_group_add_24),
+                            contentDescription = "add friend",
+                            tint = Color(0xFF2462C2)
+                        )
+                    }
                 }
             }
         }
-    }
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -128,6 +127,9 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                 Text(text = "Gallery")
             }
         }
+    }
+
+
     }
 
 

@@ -282,6 +282,6 @@ fun StatItem(label: String, number: Int, number2: Int? = null) {
 
 @Composable
 fun MemoriesSection() {
-    PostScreen()
+    //PostScreen()
 }
 
