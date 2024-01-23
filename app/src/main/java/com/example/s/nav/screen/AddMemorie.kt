@@ -1,5 +1,6 @@
 package com.example.s.nav.screen
 
+import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
 import android.util.Log
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.s.MainActivity
 import com.example.s.User
 import com.example.s.nav.Screens
 import com.example.s.network.MatchInfo
@@ -83,7 +85,7 @@ enum class FootballLeague {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier =
+fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modifier =
     Modifier) {
 
     var selectedLeague by remember { mutableStateOf<FootballLeague?>(null) }
@@ -119,7 +121,11 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
     var selectedMatch by remember { mutableStateOf<MatchInfo?>(null) }
     var expandedMatch by remember { mutableStateOf(false) }
-
+    //GPS
+    main.locationPremissionRequest.launch(arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ))
 
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
@@ -270,6 +276,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
+            Log.d("location", main.stat.latitude.toString() +"   " +main.stat.longitude.toString())
             coroutineScope.launch {
                 try {
                     Log.d("Api Request", "URL: ${MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).toString()}")

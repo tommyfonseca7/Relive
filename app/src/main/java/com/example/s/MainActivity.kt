@@ -1,10 +1,12 @@
 package com.example.s
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -33,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.s.dataStructure.Stat
+import com.example.s.location.LocationManager
 import com.example.s.nav.NavGraph
 import com.example.s.nav.Screens
 import com.example.s.nav.screen.Camera
@@ -51,6 +54,37 @@ class MainActivity : ComponentActivity() {
     lateinit var  navController :NavHostController
     val stat : Stat by mutableStateOf(Stat())
     var screen : Int by mutableStateOf(0)
+
+    val locationPremissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ){ permisions ->
+        when{
+            permisions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION,false)->{
+                LocationManager.Builder
+                    .create(this@MainActivity)
+                    .request(onUpdateLocation = { latitude: Double, longitude: Double ->
+                        LocationManager.removeCallback(this@MainActivity)
+                        stat.latitude = latitude
+                        stat.longitude = longitude
+                    })
+            }
+            permisions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION,false)->{
+                LocationManager.Builder
+                    .create(this@MainActivity)
+                    .request(onUpdateLocation = { latitude: Double, longitude: Double ->
+                        LocationManager.removeCallback(this@MainActivity)
+                        stat.latitude = latitude
+                        stat.longitude = longitude
+                    })
+            }
+
+            else ->{
+                //LocationManager.goSettingScrren(this@MainActivity)
+            }
+
+        }
+
+    }
 
     val items = listOf(
         BottomNavigationItem(
