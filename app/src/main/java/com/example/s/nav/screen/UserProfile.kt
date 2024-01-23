@@ -1,6 +1,5 @@
 package com.example.s.nav.screen
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
 import android.util.Log
@@ -11,27 +10,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -43,13 +35,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.example.s.R
 import com.example.s.User
 import com.example.s.nav.Screens
@@ -57,7 +46,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import io.ktor.utils.io.bits.Memory
 import kotlinx.coroutines.launch
@@ -73,6 +61,7 @@ fun UserProfile(navController: NavController, main: Activity, modifier: Modifier
     val coroutineScope = rememberCoroutineScope()
     val userDocumentId = remember { mutableStateOf<String?>(null) }
     val userData = remember { mutableStateOf<User?>(null) }
+
 
     LaunchedEffect(email) {
         if (email != null) {
@@ -110,6 +99,7 @@ fun DisplayProfileDetails(user: User,navController: NavController) {
 
 @Composable
 fun TopSection(user: User, navController: NavController) {
+    val auth = com.google.firebase.ktx.Firebase.auth
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -143,7 +133,7 @@ fun TopSection(user: User, navController: NavController) {
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(2.dp, Color.White, CircleShape)
-                .clickable { imagePickerLauncher.launch("image/*")}
+                .clickable { imagePickerLauncher.launch("image/*") }
         )
         Spacer(modifier = Modifier.width(16.dp))
         // Nome e username
@@ -192,6 +182,14 @@ fun TopSection(user: User, navController: NavController) {
                         text = "Friends ",
                         style = MaterialTheme.typography.bodySmall
                     )
+                }
+            }
+            Row {
+                TextButton(onClick = {
+                    auth.signOut()
+                    navController.navigate(Screens.Sign.route)
+                }) {
+                    Text("Log out", fontSize = 24.sp)
                 }
             }
         }
