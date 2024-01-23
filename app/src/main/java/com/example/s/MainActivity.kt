@@ -21,20 +21,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.s.nav.NavGraph
 import com.example.s.nav.Screens
 import com.example.s.nav.screen.Camera
 import com.example.s.ui.theme.STheme
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 data class BottomNavigationItem(
     val title: String,
@@ -86,33 +83,38 @@ class MainActivity : ComponentActivity() {
         var selectedItemIndex by rememberSaveable {
             mutableStateOf(0)
         }
+
+        val currentRoute = currentRoute(navController)
+
         Scaffold(
             bottomBar = {
-                NavigationBar {
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            selected = selectedItemIndex == index,
-                            onClick = {
-                                selectedItemIndex = index
-                                if (selectedItemIndex == 0){
-                                    navController.navigate(Screens.MemoriesScreen.route)
-                                }else{
-                                    navController.navigate(Screens.UserProfile.route)
-                                }
-                            },
-                            label = {
-                                Text(text = item.title)
-                            },
-                            alwaysShowLabel = false,
-                            icon = { Icon(
-                                imageVector = if (index == selectedItemIndex) {
-                                    item.selectedIcon
-                                } else item.unselectedIcon,
-                                contentDescription = item.title
-                            )
+                if (shouldShowBottomBar(currentRoute)){
+                    NavigationBar {
+                        items.forEachIndexed { index, item ->
+                            NavigationBarItem(
+                                selected = selectedItemIndex == index,
+                                onClick = {
+                                    selectedItemIndex = index
+                                    if (selectedItemIndex == 0){
+                                        navController.navigate(Screens.MemoriesScreen.route)
+                                    }else{
+                                        navController.navigate(Screens.UserProfile.route)
+                                    }
+                                },
+                                label = {
+                                    Text(text = item.title)
+                                },
+                                alwaysShowLabel = false,
+                                icon = { Icon(
+                                    imageVector = if (index == selectedItemIndex) {
+                                        item.selectedIcon
+                                    } else item.unselectedIcon,
+                                    contentDescription = item.title
+                                )
 
-                            }
-                        )
+                                }
+                            )
+                        }
                     }
                 }
             }){ contentPadding ->
@@ -120,5 +122,19 @@ class MainActivity : ComponentActivity() {
             NavGraph(navController = navController, this)
         }
     }
+}
+
+
+@Composable
+private fun shouldShowBottomBar(route: String?): Boolean {
+    // Specify the routes where you want to hide the bottom bar
+    val routesWithoutBottomBar = listOf(Screens.AddMemorie.route)
+    return route !in routesWithoutBottomBar
+}
+
+@Composable
+private fun currentRoute(navController: NavHostController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
 }
 

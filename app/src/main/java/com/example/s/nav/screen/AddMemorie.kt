@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -24,6 +26,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -128,18 +131,28 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
             .padding(16.dp),
         contentAlignment = Alignment.TopStart
     ) {
-        Text(
-            text = "Add Memory",
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .align(Alignment.TopStart),
-            style = TextStyle(
-                color = Color(0xFF2462C2),
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+
+            Text(
+                text = "Add Memory",
+                modifier = Modifier
+                    .padding(start = 16.dp),
+                style = TextStyle(
+                    color = Color(0xFF2462C2),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp
+                )
             )
-        )
+        }
     }
+
     Spacer(modifier = Modifier.height(16.dp))
 
     Column(
