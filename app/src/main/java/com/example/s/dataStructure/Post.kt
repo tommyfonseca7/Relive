@@ -12,5 +12,9 @@ data class Post (
     var awayScore : Int? = 0,
     var leagueName : String? = "",
     var venue : String? = "",
-    var country : String? = ""
+    var country : String? = "",
+    val homeTeam: String = "",
+    val awayTeam: String = "",
+    val title: String = "",
+
     )

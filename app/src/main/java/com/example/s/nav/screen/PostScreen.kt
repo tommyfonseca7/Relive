@@ -1,7 +1,6 @@
 package com.example.s.nav.screen
 
 import android.annotation.SuppressLint
-import android.icu.text.DateFormat
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -39,17 +38,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.s.R
-import com.example.s.User
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
+import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.example.s.network.MatchesApi
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.AbstractCoroutine
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable

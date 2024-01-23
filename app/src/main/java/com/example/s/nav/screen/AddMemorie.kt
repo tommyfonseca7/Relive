@@ -1,7 +1,6 @@
 package com.example.s.nav.screen
 
 import android.Manifest
-import android.app.Activity
 import android.content.ContentValues
 import android.util.Log
 import android.widget.Toast
@@ -50,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.MainActivity
-import com.example.s.User
+import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.example.s.network.MatchInfo
 import com.example.s.network.MatchesApi
@@ -322,7 +321,7 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
 
         Button(onClick = {
             if (selectedLeague == FootballLeague.OTHER) {
-                val title = homeClub + "Vs" + awayClub + " - " + selectedDate.toString()
+                val title = homeClub + " Vs " + awayClub + " - " + selectedDate.toString()
                 val memory = hashMapOf(
                     "title" to title,
                     "dateOfCreation" to System.currentTimeMillis(),
@@ -340,7 +339,7 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
                         Log.w(ContentValues.TAG, "Error adding document", e)
                     }
             } else {
-                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + " - " + selectedDate.toString()
+                val title = selectedMatch?.homeTeam?.name + " Vs " + selectedMatch?.awayTeam?.name + " - " + selectedDate.toString()
                 val memory = hashMapOf(
                     "title" to title,
                     "dateOfCreation" to System.currentTimeMillis(),
