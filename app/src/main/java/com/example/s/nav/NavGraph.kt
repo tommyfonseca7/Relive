@@ -2,15 +2,10 @@ package com.example.s.nav
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.s.MainActivity
-import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
 import com.example.s.nav.screen.AddMemorie
 import com.example.s.nav.screen.Done
@@ -80,7 +75,7 @@ fun NavGraph (navController: NavHostController, main: MainActivity, p:Stat){
         }
         composable(Screens.UserProfile.route) {
             main.change(1)
-            UserProfile(navController = navController, main = main)
+            UserProfile(navController = navController, main = main, p= p)
         }
         composable(route = Screens.Gallery.route+ "?sportType={sportType}"+ "?gameName={gameName}"){navBackStack ->
             //extracting the argument

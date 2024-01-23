@@ -11,10 +11,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -48,13 +45,13 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.s.R
 import com.example.s.User
+import com.example.s.dataStructure.Stat
 import com.example.s.nav.Screens
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
-import io.ktor.utils.io.bits.Memory
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -62,7 +59,12 @@ import java.util.Locale
 
 
 @Composable
-fun UserProfile(navController: NavController, main: Activity, modifier: Modifier = Modifier) {
+fun UserProfile(
+    navController: NavController,
+    main: Activity,
+    modifier: Modifier = Modifier,
+    p: Stat
+) {
     val auth = com.google.firebase.ktx.Firebase.auth
     val email = auth.currentUser?.email
     val coroutineScope = rememberCoroutineScope()
@@ -86,13 +88,13 @@ fun UserProfile(navController: NavController, main: Activity, modifier: Modifier
 
     // Exibir detalhes do perfil
     userData.value?.let { user ->
-        DisplayProfileDetails(user,navController)
+        DisplayProfileDetails(user,navController,p)
     }
 
 }
 
 @Composable
-fun DisplayProfileDetails(user: User,navController: NavController) {
+fun DisplayProfileDetails(user: User, navController: NavController, p: Stat) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,7 +102,7 @@ fun DisplayProfileDetails(user: User,navController: NavController) {
     ) {
         TopSection(user = user, navController = navController ) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
-        MemoriesSection() // Para a seção de memórias
+        MemoriesSection(navController,p) // Para a seção de memórias
     }
 }
 
@@ -295,7 +297,7 @@ fun StatItem(label: String, number: Int, number2: Int? = null) {
 }
 
 @Composable
-fun MemoriesSection() {
-    //PostScreen()
+fun MemoriesSection(navController: NavController, p: Stat) {
+    PostScreen(navController,p)
 }
 
