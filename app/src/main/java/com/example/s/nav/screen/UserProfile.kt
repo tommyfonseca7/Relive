@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.s.R
+import com.example.s.dataStructure.Stat
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
@@ -61,7 +62,12 @@ import java.util.Locale
 
 
 @Composable
-fun UserProfile(navController: NavController, main: Activity, modifier: Modifier = Modifier) {
+fun UserProfile(
+    navController: NavController,
+    main: Activity,
+    modifier: Modifier = Modifier,
+    p: Stat
+) {
     val auth = com.google.firebase.ktx.Firebase.auth
     val email = auth.currentUser?.email
     val coroutineScope = rememberCoroutineScope()
@@ -85,13 +91,13 @@ fun UserProfile(navController: NavController, main: Activity, modifier: Modifier
 
     // Exibir detalhes do perfil
     userData.value?.let { user ->
-        DisplayProfileDetails(user,navController)
+        DisplayProfileDetails(user,navController,p)
     }
 
 }
 
 @Composable
-fun DisplayProfileDetails(user: User, navController: NavController) {
+fun DisplayProfileDetails(user: User, navController: NavController, p: Stat) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +105,7 @@ fun DisplayProfileDetails(user: User, navController: NavController) {
     ) {
         TopSection(user = user, navController = navController ) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
-        MemoriesSection() // Para a seção de memórias
+        MemoriesSection(navController,p) // Para a seção de memórias
     }
 }
 
@@ -344,7 +350,7 @@ fun StatItem(label: String, number: Int, number2: Int? = null) {
 }
 
 @Composable
-fun MemoriesSection() {
-    //PostScreen()
+fun MemoriesSection(navController: NavController, p: Stat) {
+    PostScreen(navController,p)
 }
 
