@@ -87,6 +87,7 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     var otherLeague by remember { mutableStateOf("") }
     var homeClub by remember { mutableStateOf("") }
     var awayClub by remember { mutableStateOf("") }
+
     val leagues = FootballLeague.values()
     var expanded by remember { mutableStateOf(false) }
     var matches by remember { mutableStateOf<List<MatchInfo>?>(null) }
@@ -313,11 +314,66 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
 
 
                     )
-                    memoriesRef.add(memory)
-                        .addOnSuccessListener { documentReference ->
-                            Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                        }.addOnFailureListener { e ->
-                            Log.w(ContentValues.TAG, "Error adding document", e)
+                }
+                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
+            }
+
+            DropdownMenu(
+                expanded = expandedMatch,
+                onDismissRequest = { expandedMatch = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                // Iterate over matches and add them to the dropdown
+                matches?.forEach { match ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedMatch = match
+                            expandedMatch = false
+                        }, text = { Text(text = "${match.homeTeam.name} vs ${match.awayTeam.name}") }
+                    )
+                }
+            }
+        }
+
+        Button(onClick = {
+            if (selectedLeague == FootballLeague.OTHER) {
+                val title = homeClub + "Vs" + awayClub + " - " + selectedDate.toString()
+                val memory = hashMapOf(
+                    "title" to title,
+                    "dateOfCreation" to System.currentTimeMillis(),
+                    "homeTeam" to homeClub,
+                    "awayTeam" to awayClub,
+                    "date" to selectedDate.toString(),
+                    "userId" to userDocumentId.value
+
+
+                )
+                memoriesRef.add(memory)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }.addOnFailureListener { e ->
+                        Log.w(ContentValues.TAG, "Error adding document", e)
+                    }
+            } else {
+                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + " - " + selectedDate.toString()
+                val memory = hashMapOf(
+                    "title" to title,
+                    "dateOfCreation" to System.currentTimeMillis(),
+                    "homeTeam" to selectedMatch?.homeTeam?.name,
+                    "homeTeamCrest" to selectedMatch?.homeTeam?.crest,
+                    "awayTeam" to selectedMatch?.awayTeam?.name,
+                    "awayTeamCrest" to selectedMatch?.awayTeam?.crest,
+                    "date" to selectedDate.toString(),
+                    "matchId" to selectedMatch?.id,
+                    "userId" to userDocumentId.value
+                    )
+                memoriesRef.add(memory)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        coroutineScope.launch {
+                            if (addMemoryToUser(userDocumentId.value.toString(), documentReference.id)) {
+                                Toast.makeText(main.baseContext, "Memory added", Toast.LENGTH_SHORT).show()
+                            }
                         }
                 } else {
                     val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + "- " + selectedDate.toString()
