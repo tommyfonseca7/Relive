@@ -117,20 +117,6 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                         tint = Color(0xFF2462C2)
                     )
                 }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = {
-                        navController.navigate(Screens.UserProfile.route)
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_profile),
-                        contentDescription = "Profile",
-                        tint = Color(0xFF2462C2)
-                    )
-                }
             }
         }
     }
