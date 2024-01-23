@@ -97,7 +97,7 @@ fun DisplayProfileDetails(user: User,navController: NavController) {
     ) {
         TopSection(user = user, navController = navController ) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
-        //MemoriesSection(memories = user.memories) // Para a seção de memórias
+        MemoriesSection() // Para a seção de memórias
     }
 }
 
@@ -281,7 +281,7 @@ fun StatItem(label: String, number: Int, number2: Int? = null) {
 }
 
 @Composable
-fun MemoriesSection(memories: List<Memory>) {
-
+fun MemoriesSection() {
+    PostScreen()
 }
 
