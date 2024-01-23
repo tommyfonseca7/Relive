@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.s.R
-import com.example.s.User
 import com.example.s.dataStructure.Stat
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.User
