@@ -7,8 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
@@ -51,10 +53,16 @@ class MainActivity : ComponentActivity() {
             unselectedIcon = Icons.Outlined.Favorite
         ),
         BottomNavigationItem(
-            title = "Settings",
+            title = "Add Memory",
+            selectedIcon = Icons.Filled.Add,
+            unselectedIcon = Icons.Outlined.Add
+        ),
+        BottomNavigationItem(
+            title = "Profile",
             selectedIcon = Icons.Filled.Person,
             unselectedIcon = Icons.Outlined.Person
         )
+
     )
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -97,8 +105,11 @@ class MainActivity : ComponentActivity() {
                                     selectedItemIndex = index
                                     if (selectedItemIndex == 0){
                                         navController.navigate(Screens.MemoriesScreen.route)
-                                    }else{
+                                    }else if (selectedItemIndex == 1){
+                                        navController.navigate(Screens.AddMemorie.route)
+                                    } else {
                                         navController.navigate(Screens.UserProfile.route)
+
                                     }
                                 },
                                 label = {
