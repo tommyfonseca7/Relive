@@ -141,7 +141,7 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
                 .wrapContentSize(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            PostScreen()
+            //PostScreen()
             Button(onClick = {navController.navigate(Screens.AddMemorie.route)}) {
                 Text(text = "Add Memory")
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Memorie", tint = Color.White)

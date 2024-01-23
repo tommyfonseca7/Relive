@@ -56,19 +56,16 @@ fun PostScreen(/*navController: NavController, main: Activity, modifier: Modifie
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
-    val docRef = Firebase.firestore.collection("Users").document(Firebase.auth.currentUser?.uid!!)
+    val db =Firebase.firestore
+    val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
     docRef.get().addOnSuccessListener { document ->
         if (document != null) {
 
             var user = document.toObject(User::class.java)
-            Log.d("fdas",user?.email.toString()!!)
             if (user != null){
-                Log.d("fdaeqws","dsewqa")
-                var db = Firebase.database
-                db.reference.child("memories").get().addOnSuccessListener { list ->
-                    for (item in list.children){
-                        Log.d("fdas","dsa")
-                        var cast = item.getValue(Post::class.java)
+                db.collection("Memories").get().addOnSuccessListener { list ->
+                    for (item in list){
+                        var cast = item.toObject(Post::class.java)
                         if (cast != null && (cast.userUID == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userUID))){
                             if (!postList.contains(cast)){
                                 postList = postList.toMutableList().apply {
@@ -161,28 +158,7 @@ fun PostListItem(p: Post){
                 }
 
             }
-
-            //postimages(p = p)
         }
-
-}
-
-@Composable
-private fun postimages(p : Post){
-    if (p.images != null)
-    LazyRow(){
-        items(p.images){ id ->
-            Image(painter = painterResource(id = id),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(8.dp)
-                    //.size(84.dp)
-                    .requiredHeight(150.dp)
-                    .requiredWidth(340.dp)
-                    .clip(RoundedCornerShape(corner = CornerSize(16.dp))))
-        }
-    }
 
 }
 

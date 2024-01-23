@@ -7,7 +7,7 @@ data class User (
     val email : String = "",
     var name : String = "",
     var username : String = "",
-    var preferredSports : List<String> = emptyList(),
+    var Sports : List<String> = emptyList(),
     var friends : List<String> = emptyList(),
     var registrationDate: Timestamp? = null
 )
