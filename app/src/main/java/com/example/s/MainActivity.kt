@@ -139,7 +139,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun shouldShowBottomBar(route: String?): Boolean {
     // Specify the routes where you want to hide the bottom bar
-    val routesWithoutBottomBar = listOf(Screens.AddMemorie.route)
+    val routesWithoutBottomBar = listOf(Screens.AddMemorie.route, Screens.Sign.route, Screens.Regist.route, Screens.PostRegistForm.route)
     return route !in routesWithoutBottomBar
 }
 
