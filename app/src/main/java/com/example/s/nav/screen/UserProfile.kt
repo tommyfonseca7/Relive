@@ -13,14 +13,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -93,7 +97,7 @@ fun DisplayProfileDetails(user: User,navController: NavController) {
     ) {
         TopSection(user = user, navController = navController ) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
-        //MemoriesSection(memories = user.memories) // Para a seção de memórias
+        MemoriesSection() // Para a seção de memórias
     }
 }
 
@@ -109,9 +113,8 @@ fun TopSection(user: User, navController: NavController) {
             scope.launch {
                 // Assumindo que você tem uma função para fazer o upload e obter a URL da imagem
                 val imageUrl = uploadImageAndGetUrl(it)
-                updateUserProfileImageUrl(user, imageUrl.toString())
-                user.profileImageUrl =
-                    imageUrl.toString()
+                updateUserProfileImageUrl(user, imageUrl)
+                user.profileImageUrl = imageUrl
             }
         }
     }
@@ -229,42 +232,56 @@ suspend fun updateUserProfileImageUrl(user: User, imageUrl: String) {
 fun StatsSection(user: User) {
     Card(
         modifier = Modifier
-            .padding(24.dp)
-            .fillMaxWidth(),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .wrapContentHeight(),
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "Games",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
-            Text(
-                text = "Estádios",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
-            Text(
-                text = "Equipas",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
-            Text(
-                text = "Hrs:Mins",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
+            val games = 0
+            StatItem(label = "Games", number = games)
+            Divider(color = Color.White, modifier = Modifier
+                .height(60.dp)
+                .width(1.dp))
+            val stadiums = 0
+            StatItem(label = "Stadiums", number = stadiums)
+            Divider(color = Color.White, modifier = Modifier
+                .height(60.dp)
+                .width(1.dp))
+            val teams = 0
+            StatItem(label = "Teams", number = teams)
+            Divider(color = Color.White, modifier = Modifier
+                .height(60.dp)
+                .width(1.dp))
+            val hours = 10
+            val minutes = 40
+            StatItem(label = "Hrs:Mins", number = hours, number2 = minutes)
         }
     }
 }
 
 @Composable
-fun MemoriesSection(memories: List<Memory>) {
+fun StatItem(label: String, number: Int, number2: Int? = null) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = if (number2 != null) "$number:$number2" else number.toString(),
+            style = MaterialTheme.typography.headlineMedium.copy(color = Color.White)
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+        )
+    }
+}
 
+@Composable
+fun MemoriesSection() {
+    PostScreen()
 }
 
