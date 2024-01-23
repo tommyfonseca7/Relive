@@ -120,233 +120,235 @@ fun AddMemorie(navController: NavController, main: Activity, modifier: Modifier 
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.TopStart
-    ) {
-        Text(
-            text = "Add Memory",
+    Box(modifier=  Modifier.padding(bottom = 80.dp)){
+        Box(
             modifier = Modifier
-                .padding(bottom = 16.dp)
-                .align(Alignment.TopStart),
-            style = TextStyle(
-                color = Color(0xFF2462C2),
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp
-            )
-        )
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-            .padding(top = 65.dp)
-            .verticalScroll(rememberScrollState()),
-    ) {
-
-        Box {
-            TextButton(onClick = { expanded = true }) {
-                Text(text = selectedLeague?.name?.replace("_", " ")
-                    ?.split(" ")?.joinToString(" ") { it.lowercase().capitalize() }
-                    ?: "Select a League"
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Text(
+                text = "Add Memory",
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .align(Alignment.TopStart),
+                style = TextStyle(
+                    color = Color(0xFF2462C2),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp
                 )
-                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+                .padding(top = 65.dp)
+                .verticalScroll(rememberScrollState()),
+        ) {
+
+            Box {
+                TextButton(onClick = { expanded = true }) {
+                    Text(text = selectedLeague?.name?.replace("_", " ")
+                        ?.split(" ")?.joinToString(" ") { it.lowercase().capitalize() }
+                        ?: "Select a League"
+                    )
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false},
+                    modifier = Modifier.background(Color.White)
+                ) {
+                    leagues.forEach { league ->
+                        if (league != FootballLeague.OTHER) {
+                            DropdownMenuItem(
+                                text = { Text(text = league.name.replace("_", " ").split(" ").joinToString(" ") { it.lowercase().capitalize() }) },
+                                onClick = {
+                                    selectedLeague = league
+                                    expanded = false
+                                    competitionCode = when (selectedLeague) {
+                                        FootballLeague.WORLD_CUP -> "WC"
+                                        FootballLeague.CHAMPIONS_LEAGUE -> "CL"
+                                        FootballLeague.BUNDESLIGA -> "BL1"
+                                        FootballLeague.EREDIVISIE -> "DED"
+                                        FootballLeague.CAMPEONATO_BRASILEIRO -> "BSA"
+                                        FootballLeague.PRIMERA_DIVISION -> "PD"
+                                        FootballLeague.LIGUE_1 -> "FL1"
+                                        FootballLeague.CHAMPIONSHIP -> "ELC"
+                                        FootballLeague.PRIMEIRA_LIGA -> "PPL"
+                                        FootballLeague.EUROPEAN_CHAMPIONSHIP -> "EC"
+                                        FootballLeague.SERIE_A -> "SA"
+                                        FootballLeague.PREMIER_LEAGUE -> "PL"
+                                        FootballLeague.COPA_LIBERTADORES -> "CLI"
+                                        else -> ""
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    DropdownMenuItem(
+                        text = { Text(text = "Other")},
+                        onClick = {
+                            selectedLeague = FootballLeague.OTHER
+                            expanded = false
+
+                        }
+                    )
+                }
             }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false},
-                modifier = Modifier.background(Color.White)
-            ) {
-                leagues.forEach { league ->
-                    if (league != FootballLeague.OTHER) {
+
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (selectedLeague == FootballLeague.OTHER) {
+                EditField(
+                    label = "Enter other league",
+                    value = otherLeague,
+                    onValueChanged = {otherLeague = it},
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
+                    color = color,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+
+                EditField(
+                    label = "Select Home Club",
+                    value = homeClub,
+                    onValueChanged = {homeClub = it},
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
+                    color = color,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+
+                EditField(
+                    label = "Enter Away Club",
+                    value = awayClub,
+                    onValueChanged = {awayClub = it},
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
+                    color = color,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            DatePicker(state = datePickerState)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = {
+                coroutineScope.launch {
+                    try {
+                        Log.d("Api Request", "URL: ${MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).toString()}")
+                        matches = MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).matches
+
+                    } catch (e : Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }) {
+                Text(text = "Search matches")
+            }
+
+
+
+            Box {
+                TextButton(onClick = { expandedMatch = true }) {
+                    selectedMatch?.let { match ->
+                        Text(
+                            text = "${match.homeTeam.name} vs ${match.awayTeam.name}",
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
+                }
+
+                DropdownMenu(
+                    expanded = expandedMatch,
+                    onDismissRequest = { expandedMatch = false },
+                    modifier = Modifier.background(Color.White)
+                ) {
+                    // Iterate over matches and add them to the dropdown
+                    matches?.forEach { match ->
                         DropdownMenuItem(
-                            text = { Text(text = league.name.replace("_", " ").split(" ").joinToString(" ") { it.lowercase().capitalize() }) },
                             onClick = {
-                                selectedLeague = league
-                                expanded = false
-                                competitionCode = when (selectedLeague) {
-                                    FootballLeague.WORLD_CUP -> "WC"
-                                    FootballLeague.CHAMPIONS_LEAGUE -> "CL"
-                                    FootballLeague.BUNDESLIGA -> "BL1"
-                                    FootballLeague.EREDIVISIE -> "DED"
-                                    FootballLeague.CAMPEONATO_BRASILEIRO -> "BSA"
-                                    FootballLeague.PRIMERA_DIVISION -> "PD"
-                                    FootballLeague.LIGUE_1 -> "FL1"
-                                    FootballLeague.CHAMPIONSHIP -> "ELC"
-                                    FootballLeague.PRIMEIRA_LIGA -> "PPL"
-                                    FootballLeague.EUROPEAN_CHAMPIONSHIP -> "EC"
-                                    FootballLeague.SERIE_A -> "SA"
-                                    FootballLeague.PREMIER_LEAGUE -> "PL"
-                                    FootballLeague.COPA_LIBERTADORES -> "CLI"
-                                    else -> ""
-                                }
-                            }
+                                selectedMatch = match
+                                expandedMatch = false
+                            }, text = { Text(text = "${match.homeTeam.name} vs ${match.awayTeam.name}") }
                         )
                     }
                 }
-                DropdownMenuItem(
-                    text = { Text(text = "Other")},
-                    onClick = {
-                        selectedLeague = FootballLeague.OTHER
-                        expanded = false
-
-                    }
-                )
             }
-        }
+
+            Button(onClick = {
+                if (selectedLeague == FootballLeague.OTHER) {
+                    val title = homeClub + "Vs" + awayClub + "- " + selectedDate.toString()
+                    val memory = hashMapOf(
+                        "title" to title,
+                        "dateOfCreation" to System.currentTimeMillis(),
+                        "homeTeam" to homeClub,
+                        "awayTeam" to awayClub,
+                        "date" to selectedDate.toString(),
+                        "userId" to userDocumentId.value
 
 
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (selectedLeague == FootballLeague.OTHER) {
-            EditField(
-                label = "Enter other league",
-                value = otherLeague,
-                onValueChanged = {otherLeague = it},
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                ),
-                color = color,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                )
-
-            EditField(
-                label = "Select Home Club",
-                value = homeClub,
-                onValueChanged = {homeClub = it},
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                ),
-                color = color,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            )
-
-            EditField(
-                label = "Enter Away Club",
-                value = awayClub,
-                onValueChanged = {awayClub = it},
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                ),
-                color = color,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DatePicker(state = datePickerState)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            coroutineScope.launch {
-                try {
-                    Log.d("Api Request", "URL: ${MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).toString()}")
-                    matches = MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).matches
-
-                } catch (e : Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }) {
-            Text(text = "Search matches")
-        }
-
-
-
-        Box {
-            TextButton(onClick = { expandedMatch = true }) {
-                selectedMatch?.let { match ->
-                    Text(
-                        text = "${match.homeTeam.name} vs ${match.awayTeam.name}",
-                        modifier = Modifier.padding(top = 8.dp)
                     )
-                }
-                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
-            }
-
-            DropdownMenu(
-                expanded = expandedMatch,
-                onDismissRequest = { expandedMatch = false },
-                modifier = Modifier.background(Color.White)
-            ) {
-                // Iterate over matches and add them to the dropdown
-                matches?.forEach { match ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedMatch = match
-                            expandedMatch = false
-                        }, text = { Text(text = "${match.homeTeam.name} vs ${match.awayTeam.name}") }
-                    )
-                }
-            }
-        }
-
-        Button(onClick = {
-            if (selectedLeague == FootballLeague.OTHER) {
-                val title = homeClub + "Vs" + awayClub + "- " + selectedDate.toString()
-                val memory = hashMapOf(
-                    "title" to title,
-                    "dateOfCreation" to System.currentTimeMillis(),
-                    "homeTeam" to homeClub,
-                    "awayTeam" to awayClub,
-                    "date" to selectedDate.toString(),
-                    "userId" to userDocumentId.value
-
-
-                )
-                memoriesRef.add(memory)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                    }.addOnFailureListener { e ->
-                        Log.w(ContentValues.TAG, "Error adding document", e)
-                    }
-            } else {
-                val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + "- " + selectedDate.toString()
-                val memory = hashMapOf(
-                    "title" to title,
-                    "dateOfCreation" to System.currentTimeMillis(),
-                    "homeTeam" to selectedMatch?.homeTeam?.name,
-                    "awayTeam" to selectedMatch?.awayTeam?.name,
-                    "date" to selectedDate.toString(),
-                    "matchId" to selectedMatch?.id,
-                    "userId" to userDocumentId.value
-                    )
-                memoriesRef.add(memory)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                        coroutineScope.launch {
-                            if (addMemoryToUser(userDocumentId.value.toString(), documentReference.id)) {
-                                Toast.makeText(main.baseContext, "Memory added", Toast.LENGTH_SHORT).show()
-                            }
+                    memoriesRef.add(memory)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        }.addOnFailureListener { e ->
+                            Log.w(ContentValues.TAG, "Error adding document", e)
                         }
-                    }.addOnFailureListener { e ->
-                        Log.w(ContentValues.TAG, "Error adding memory document", e)
-                    }
+                } else {
+                    val title = selectedMatch?.homeTeam?.name + "Vs" + selectedMatch?.awayTeam?.name + "- " + selectedDate.toString()
+                    val memory = hashMapOf(
+                        "title" to title,
+                        "dateOfCreation" to System.currentTimeMillis(),
+                        "homeTeam" to selectedMatch?.homeTeam?.name,
+                        "awayTeam" to selectedMatch?.awayTeam?.name,
+                        "date" to selectedDate.toString(),
+                        "matchId" to selectedMatch?.id,
+                        "userId" to userDocumentId.value
+                    )
+                    memoriesRef.add(memory)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                            coroutineScope.launch {
+                                if (addMemoryToUser(userDocumentId.value.toString(), documentReference.id)) {
+                                    Toast.makeText(main.baseContext, "Memory added", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }.addOnFailureListener { e ->
+                            Log.w(ContentValues.TAG, "Error adding memory document", e)
+                        }
+                }
+                navController.navigate(Screens.MemoriesScreen.route)
+            }) {
+                Text(text = "Add Football Memory")
             }
-            navController.navigate(Screens.MemoriesScreen.route)
-        }) {
-            Text(text = "Add Football Memory")
         }
     }
+
 }
 
 
