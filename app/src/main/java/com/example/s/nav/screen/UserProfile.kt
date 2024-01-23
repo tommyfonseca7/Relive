@@ -30,9 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +48,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.s.R
 import com.example.s.User
 import com.example.s.dataStructure.Stat
+import com.example.s.dataStructure.Post
+import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -254,32 +258,82 @@ fun StatsSection(user: User) {
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        var stadiums by remember { mutableStateOf(0) }
+        var teams by remember { mutableStateOf(0) }
+        LaunchedEffect(user.memories) {
+            // Launch a coroutine to fetch the number of stadiums asynchronously
+            stadiums = getNumberOfStadiums(user.memories)
+            teams = getNumberOfTeams(user.memories)
+        }
+
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            val games = 0
+
+            val games = user.memories.size
+            Log.d("StatsSection", "Number of games: $games")
             StatItem(label = "Games", number = games)
             Divider(color = Color.White, modifier = Modifier
                 .height(60.dp)
                 .width(1.dp))
-            val stadiums = 0
             StatItem(label = "Stadiums", number = stadiums)
             Divider(color = Color.White, modifier = Modifier
                 .height(60.dp)
                 .width(1.dp))
-            val teams = 0
             StatItem(label = "Teams", number = teams)
             Divider(color = Color.White, modifier = Modifier
                 .height(60.dp)
                 .width(1.dp))
-            val hours = 10
-            val minutes = 40
+            val totalMemoriesTime = user.memories.size * 90
+            val hours = totalMemoriesTime / 60
+            val minutes = totalMemoriesTime % 60
             StatItem(label = "Hrs:Mins", number = hours, number2 = minutes)
         }
     }
+}
+
+private suspend fun getNumberOfStadiums(memories : List<String>) : Int {
+    val memoriesRef = FirebaseFirestore.getInstance().collection("Memories")
+    var stadiums = mutableListOf<String>()
+    for (memoryId in memories) {
+        val memory = memoriesRef
+            .document(memoryId)
+            .get()
+            .await()
+            .toObject(Post::class.java)
+        memory?.venue?.let {
+            if (!stadiums.contains(it)){
+                stadiums.add(it)
+            }
+        }
+    }
+    return stadiums.size
+}
+
+private suspend fun getNumberOfTeams(memories : List<String>) : Int {
+    val memoriesRef = FirebaseFirestore.getInstance().collection("Memories")
+    var teams = mutableListOf<String>()
+    for (memoryId in memories) {
+        val memory = memoriesRef
+            .document(memoryId)
+            .get()
+            .await()
+            .toObject(Post::class.java)
+        memory?.let {
+            if (!teams.contains(it.homeTeam)) {
+                teams.add(it.homeTeam)
+            }
+            if (!teams.contains(it.awayTeam)) {
+                teams.add(it.awayTeam)
+            }
+        }
+    }
+
+    return teams.size
 }
 
 @Composable

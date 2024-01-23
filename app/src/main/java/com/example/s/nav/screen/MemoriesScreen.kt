@@ -34,9 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.s.R
-import com.example.s.User
-import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
+import com.example.s.dataStructure.User
 import com.example.s.nav.Screens
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
