@@ -58,7 +58,7 @@ fun PostScreen(navController: NavController, p:Stat
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
-    Log.d("cast","dssaddas")
+    var checkList = ArrayList<String>()
     val db =Firebase.firestore
     val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
     docRef.get().addOnSuccessListener { document ->
@@ -66,13 +66,13 @@ fun PostScreen(navController: NavController, p:Stat
 
             var user = document.toObject(User::class.java)
             if (user != null){
+
                 db.collection("Memories").get().addOnSuccessListener { list ->
                     for (item in list){
                         var cast = item.toObject(Post::class.java)
-
                         if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
-                            Log.d("ids", cast.matchId.toString())
-                            if (!postList.contains(cast)){
+                            if (!checkList.contains(item.id)){
+                                checkList.add(item.id)
                                 postList = postList.toMutableList().apply {
                                     add(cast) }
                             }
@@ -144,6 +144,7 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                         .align(Alignment.CenterVertically)
                 ) {
                     Row(modifier = Modifier.padding(bottom = 10.dp)) {
+
                         AsyncImage(
                             model = p.homeTeamCrest,
                             contentScale = ContentScale.Crop,
@@ -169,7 +170,7 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                     }
                 }
                 Box(modifier = Modifier.fillMaxWidth()){
-                    Image(painter = painterResource(id = R.drawable.pic2),
+                    Image(painter = painterResource(id = R.drawable.white),
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
