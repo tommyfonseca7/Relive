@@ -32,9 +32,9 @@ data class MatchInfo(
     @SerialName("id")
     val id: Long,
     @SerialName("homeTeam")
-    val homeTeam: TeamInfo,
+    val homeTeam: TeamInfo?,
     @SerialName("awayTeam")
-    val awayTeam: TeamInfo,
+    val awayTeam: TeamInfo?,
 //    @SerialName("venue")
 //    val stadium: String
 )

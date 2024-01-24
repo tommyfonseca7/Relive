@@ -130,6 +130,9 @@ fun SignIn(navController: NavController, main: MainActivity) {
                                     color = Red
                                     errm = "Your email or password is wrong"
                                 }
+                            }.addOnFailureListener { task ->
+                                color = Red
+                                errm = "Something goes wrong in sign"
                             }
                     }
                 },

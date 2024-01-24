@@ -125,7 +125,8 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     ))
-
+    var lat by remember { mutableStateOf(0.0) }
+    var log by remember { mutableStateOf(0.0) }
     LaunchedEffect(email) {
         userDocumentId.value = getDocumentIdByEmail(email)
     }
@@ -276,6 +277,9 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
 
         Button(onClick = {
             Log.d("location", main.stat.latitude.toString() +"   " +main.stat.longitude.toString())
+            lat = main.stat.latitude
+            log = main.stat.longitude
+            //location = main.stat.latitude.toString()+"   "+ main.stat.longitude.toString()
             coroutineScope.launch {
                 try {
                     Log.d("Api Request", "URL: ${MatchesApi.retrofitService.getMatches(competitionCode,selectedDate.toString(), selectedDate.toString()).toString()}")
@@ -290,14 +294,19 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
         }
 
 
-
         Box {
             TextButton(onClick = { expandedMatch = true }) {
                 selectedMatch?.let { match ->
-                    Text(
-                        text = "${match.homeTeam.name} vs ${match.awayTeam.name}",
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+                    if (match.id.toInt() != -1){
+                        Text(
+                            text = "${match.homeTeam?.name} vs ${match.awayTeam?.name}",
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }else{
+                        Text(text = "(Current)FCUL Event CM",
+                            modifier = Modifier.padding(top = 8.dp))
+                    }
+
                 }
                 Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Select a League", tint = Color(0xFF2462C2))
             }
@@ -307,20 +316,51 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
                 onDismissRequest = { expandedMatch = false },
                 modifier = Modifier.background(Color.White)
             ) {
+                if (lat < 39 && lat > 38 && log < -9 && log > -10){
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedMatch = MatchInfo(id = -1, null, null)
+                            expandedMatch = false
+                        }, text = { Text(text = "(Current)FCUL Event CM") }
+                    )
+                }
+
                 // Iterate over matches and add them to the dropdown
                 matches?.forEach { match ->
                     DropdownMenuItem(
                         onClick = {
                             selectedMatch = match
                             expandedMatch = false
-                        }, text = { Text(text = "${match.homeTeam.name} vs ${match.awayTeam.name}") }
+                        }, text = { Text(text = "${match.homeTeam?.name} vs ${match.awayTeam?.name}") }
                     )
                 }
             }
         }
 
         Button(onClick = {
-            if (selectedLeague == FootballLeague.OTHER) {
+            if (selectedMatch?.id?.toInt() == -1){
+                val date = "2024-01-24"
+                val title = "FCUL Event CM - 2024-01-24"
+                val memory = hashMapOf(
+                    "title" to title,
+                    "dateOfCreation" to System.currentTimeMillis(),
+                    "date" to date,
+                    "images" to emptyList<String>(),
+                    "matchId" to selectedMatch?.id,
+                    "userId" to userDocumentId.value
+                )
+                memoriesRef.add(memory)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        coroutineScope.launch {
+                            if (addMemoryToUser(userDocumentId.value.toString(), documentReference.id)) {
+                                Toast.makeText(main.baseContext, "Memory added", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }.addOnFailureListener { e ->
+                        Log.w(ContentValues.TAG, "Error adding memory document", e)
+                    }
+            }else if (selectedLeague == FootballLeague.OTHER) {
                 val title = homeClub + " Vs " + awayClub + " - " + selectedDate.toString()
                 val memory = hashMapOf(
                     "title" to title,
@@ -351,7 +391,7 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
                     "images" to emptyList<String>(),
                     "matchId" to selectedMatch?.id,
                     "userId" to userDocumentId.value
-                    )
+                )
                 memoriesRef.add(memory)
                     .addOnSuccessListener { documentReference ->
                         Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")

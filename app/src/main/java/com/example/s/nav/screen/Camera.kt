@@ -134,7 +134,7 @@ class Camera: ComponentActivity()  {
                             .getReference(it)
                             .child(memId)
                             .child(count.toString() + output.savedUri?.lastPathSegment!!)
-                        putImageInStorage(storageReference, output.savedUri!!,"")
+                        putImageInStorage(storageReference, output.savedUri!!,"", gameName = memId)
                     }
                     Toast.makeText(
                         applicationContext,

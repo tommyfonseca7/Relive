@@ -68,32 +68,35 @@ fun PostScreen(navController: NavController, p:Stat
         mutableStateOf<ArrayList<String>>(ArrayList())
     }
     val db =Firebase.firestore
-    val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
-    docRef.get().addOnSuccessListener { document ->
-        if (document != null) {
+    if (Firebase.auth.currentUser != null){
+        val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
+        docRef.get().addOnSuccessListener { document ->
+            if (document != null) {
 
-            var user = document.toObject(User::class.java)
-            if (user != null){
+                var user = document.toObject(User::class.java)
+                if (user != null){
 
-                db.collection("Memories").get().addOnSuccessListener { list ->
-                    for (item in list){
-                        var cast = item.toObject(Post::class.java)
-                        if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
-                            if (!checkList.contains(item.id)){
-                                checkList.add(item.id)
-                                cast.docId = item.id
-                                postList = postList.toMutableList().apply {
-                                    add(cast) }
+                    db.collection("Memories").get().addOnSuccessListener { list ->
+                        for (item in list){
+                            var cast = item.toObject(Post::class.java)
+                            if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid || user.friends.contains(cast.userId))){
+                                if (!checkList.contains(item.id)){
+                                    checkList.add(item.id)
+                                    cast.docId = item.id
+                                    postList = postList.toMutableList().apply {
+                                        add(cast) }
+                                }
                             }
                         }
                     }
                 }
-            }
 
+            }
         }
+
+        ListALl(navController,postList = postList, p)
     }
 
-    ListALl(navController,postList = postList, p)
 }
 
 @Composable
@@ -122,35 +125,36 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
     LaunchedEffect(p.userId) {
         user = getUserById(p.userId.toString())
     }
-    coroutineScope.launch {
-        try {
-            var result = MatchesApi.retrofitService.getInf(p.matchId.toString())
-            homeScore = result.scores.Score.homeScore
-            awayScore = result.scores.Score.awayScore
-            p.leagueName = result.league.name
-            p.venue = result.venue
-            p.country = result.country.name
-        }catch (e :Exception){
+    if (p.matchId?.toInt() != -1){
+        coroutineScope.launch {
+            try {
+                var result = MatchesApi.retrofitService.getInf(p.matchId.toString())
+                homeScore = result.scores.Score.homeScore
+                awayScore = result.scores.Score.awayScore
+                p.leagueName = result.league.name
+                p.venue = result.venue
+                p.country = result.country.name
+            }catch (e :Exception){
 
+            }
         }
-    }
-    Card(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .fillMaxWidth()
-            .clickable(onClick = { ->
-                //onclick function
-                p.awayScore = awayScore
-                p.homeScore = homeScore
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .clickable(onClick = { ->
+                    //onclick function
+                    p.awayScore = awayScore
+                    p.homeScore = homeScore
 
-                stat.p = p
-                navController.navigate(Screens.Detail.route)
-            }),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        ),
-        shape = RoundedCornerShape(corner = CornerSize(16.dp))
-    ) {
+                    stat.p = p
+                    navController.navigate(Screens.Detail.route)
+                }),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+        ) {
             Row {
                 Column(
                     modifier = Modifier
@@ -183,7 +187,7 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                             fontSize = 30.sp)
                     }
                 }
-                
+
                 Box(modifier = Modifier.fillMaxWidth()){
                     if (p.images?.size == 0){
                         Image(painter = painterResource(id = R.drawable.white),
@@ -242,7 +246,7 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                                 fontSize = 20.sp,
 
 
-                            )
+                                )
                         }
                     }
 
@@ -250,6 +254,97 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
 
             }
         }
+    }else{
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .clickable(onClick = { ->
+                    stat.p = p
+                    navController.navigate(Screens.Detail.route)
+                }),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+        ) {
+            Row {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Row(modifier = Modifier.padding(bottom = 10.dp)) {
+
+                        Image(painter = painterResource(id = R.drawable.fcul), contentDescription ="fcul logotipo" )
+                    }
+
+                }
+
+                Box(modifier = Modifier.fillMaxWidth()){
+                    if (p.images?.size == 0){
+                        Image(painter = painterResource(id = R.drawable.white),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(145.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .alpha(0.5f)
+                        )
+                    }else{
+                        AsyncImage(model = p.images?.get(0),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(145.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .alpha(0.5f)
+                        )
+                    }
+                    p.date?.let {
+                        // Text aligned to the top end
+                        Text(
+                            text = it,
+                            fontSize = 30.sp,
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        )
+                    }
+
+                    user?.let {
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd) // Isso alinha a Row no canto inferior direito do Box
+                                .padding(16.dp) // Isso adiciona um espaçamento ao redor da Row
+                        ) {
+                            Image(
+                                painter = if (user!!.profileImageUrl.isNullOrEmpty()) {
+                                    painterResource(id = R.drawable.ic_profile)
+                                } else {
+                                    rememberAsyncImagePainter(model = user!!.profileImageUrl)
+                                },
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, Color.White, CircleShape)
+
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "@${user!!.username}",
+                                fontSize = 20.sp,
+                                )
+                        }
+                    }
+
+                }
+
+            }
+        }
+    }
+
 
 }
 

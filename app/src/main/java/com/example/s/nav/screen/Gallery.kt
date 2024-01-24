@@ -79,25 +79,9 @@ import java.io.File
                         .child(gameName)
                         .child(count.toString() + uri.lastPathSegment!!)
                     count++
-                    putImageInStorage(storageReference, uri,"")
+                    putImageInStorage(storageReference, uri,"", gameName)
                     imageUris = imageUris.toMutableList().apply {
                         add(uri) }
-                }
-                var temp = ArrayList<Uri>()
-                var c = 0
-                storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
-                    for (item in items.items) {
-                        count = items.items.size
-                        item.downloadUrl.addOnSuccessListener { uri ->
-                            Firebase.firestore.collection("Memories").document(gameName)
-                                .update("images", FieldValue.arrayUnion(uri))
-
-                        }
-                    }
-                }
-
-                if (flag){
-
                 }
 
             }
@@ -199,10 +183,16 @@ import java.io.File
         }
     }
 
-    fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
+    fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?, gameName: String) {
         storageReference.putFile(uri)
             .addOnSuccessListener() { taskSnapshot -> // After the image loads, get a public downloadUrl for the image
-                // on success
+                taskSnapshot.metadata!!.reference!!.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        Firebase.firestore.collection("Memories").document(gameName)
+                            .update("images", FieldValue.arrayUnion(uri)).addOnSuccessListener {
+
+                            }
+                    }
             }
             .addOnFailureListener() { e ->
                 Log.w(
