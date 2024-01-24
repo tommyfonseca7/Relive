@@ -334,12 +334,14 @@ private suspend fun getNumberOfTeams(memories : List<String>) : Int {
 
     return teams.size
 }
-
+fun formatTime(hours: Int, minutes: Int): String {
+    return String.format("%02d:%02d", hours, minutes)
+}
 @Composable
 fun StatItem(label: String, number: Int, number2: Int? = null) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = if (number2 != null) "$number:$number2" else number.toString(),
+            text = if (number2 != null) formatTime(number, number2) else number.toString(),
             style = MaterialTheme.typography.headlineMedium.copy(color = Color.White)
         )
         Text(
