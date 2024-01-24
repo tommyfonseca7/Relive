@@ -81,7 +81,7 @@ fun NavGraph (navController: NavHostController, main: MainActivity, p:Stat){
             //extracting the argument
             main.change(1)
             var name: String = navBackStack.arguments?.getString("gameName")!!
-            GalleryScreen(navController = navController, main = main, gameName = name)
+            GalleryScreen(navController = navController, main = main, gameName = name, stat = p)
         }
         composable(Screens.Detail.route) {
             main.change(1)
