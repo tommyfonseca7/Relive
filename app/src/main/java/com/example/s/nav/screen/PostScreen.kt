@@ -64,7 +64,9 @@ fun PostScreen(navController: NavController, p:Stat
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
-    var checkList = ArrayList<String>()
+    var checkList by remember {
+        mutableStateOf<ArrayList<String>>(ArrayList())
+    }
     val db =Firebase.firestore
     val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
     docRef.get().addOnSuccessListener { document ->
@@ -269,7 +271,9 @@ fun PostScreenForMe(navController: NavController, p:Stat
     var postList by remember {
         mutableStateOf<List<Post>>(ArrayList())
     }
-    var checkList = ArrayList<String>()
+    var checkList by remember {
+        mutableStateOf<ArrayList<String>>(ArrayList())
+    }
     val db =Firebase.firestore
     val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
     docRef.get().addOnSuccessListener { document ->
