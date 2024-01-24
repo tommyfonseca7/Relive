@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -50,11 +51,15 @@ import java.io.File
     fun GalleryScreen(navController: NavController, main: Activity, modifier: Modifier =
         Modifier, gameName: String
     ) {
+        Log.d("gamename", gameName)
         var imageUris by remember {
             mutableStateOf<List<Uri>>(ArrayList())
         }
         var count by remember {
             mutableStateOf(0)
+        }
+        var flag by remember {
+            mutableStateOf(false)
         }
         var storage = Firebase.storage
         val user = Firebase.auth.currentUser
@@ -73,18 +78,22 @@ import java.io.File
                         add(uri) }
                 }
                 var temp = ArrayList<Uri>()
+                var c = 0
                 storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
                     for (item in items.items) {
                         count = items.items.size
                         item.downloadUrl.addOnSuccessListener { uri ->
-                            temp.add(uri)
+                            Firebase.firestore.collection("Memories").document(gameName)
+                                .update("images", FieldValue.arrayUnion(uri))
+
                         }
                     }
                 }
-                Firebase.firestore.collection("Memories").document(gameName)
-                    .update(mapOf(
-                        "images" to temp
-                    ))
+
+                if (flag){
+
+                }
+
             }
         )
             storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->

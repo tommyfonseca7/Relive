@@ -37,6 +37,7 @@ import com.example.s.dataStructure.GenerateStatistics
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
 import com.example.s.nav.Screens
+import kotlin.random.Random
 
 @Composable
 fun MemoryDetail(navController: NavController, modifier: Modifier =
@@ -71,17 +72,30 @@ fun MemoryDetail(navController: NavController, modifier: Modifier =
                                     ))
                             }
                     })){
-                        Image(painter = painterResource(id = R.drawable.white),
-                            contentDescription = "",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .alpha(0.5f))
-                        Text(text = "There is click here to upload your menories",
-                            fontSize = 30.sp,
-                            modifier = Modifier.align(Alignment.Center))
+                        if (p.p?.images?.size == 0){
+                            Image(painter = painterResource(id = R.drawable.white),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .alpha(0.5f))
+                            Text(text = "There is click here to upload your menories",
+                                fontSize = 30.sp,
+                                modifier = Modifier.align(Alignment.Center))
+                        }else{
+                            AsyncImage(model = p.p?.images?.get(0),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .alpha(0.5f)
+                            )
+                        }
+
                     }
 
 

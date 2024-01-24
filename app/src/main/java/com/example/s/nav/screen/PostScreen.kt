@@ -177,15 +177,28 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                 }
                 
                 Box(modifier = Modifier.fillMaxWidth()){
-                    Image(painter = painterResource(id = R.drawable.white),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(145.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .alpha(0.5f)
-                    )
+                    if (p.images?.size == 0){
+                        Image(painter = painterResource(id = R.drawable.white),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(145.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .alpha(0.5f)
+                        )
+                    }else{
+                        AsyncImage(model = p.images?.get(0),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(145.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .alpha(0.5f)
+                        )
+                    }
+
 
                     p.date?.let {
                         // Text aligned to the top end

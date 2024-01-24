@@ -4,7 +4,7 @@ data class Post (
     val id : Int? = 0,
     val userId : String? = "",
     val date : String? = "",
-    val images : List<Int>? = null,
+    val images : List<String>? = null,
     val matchId: Long? = 0,
     val homeTeamCrest : String? = "",
     val awayTeamCrest : String? = "",
@@ -13,7 +13,7 @@ data class Post (
     var leagueName : String? = "",
     var venue : String? = "",
     var country : String? = "",
-    var docId : String? = ""
+    var docId : String? = "",
     val homeTeam: String = "",
     val awayTeam: String = "",
     val title: String = "",
