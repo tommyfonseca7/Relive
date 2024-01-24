@@ -92,11 +92,6 @@ class Camera: ComponentActivity()  {
         startCam()
         //var androidlyButton = Button(this)
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-        viewBinding.back.setOnClickListener {
-            close()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
