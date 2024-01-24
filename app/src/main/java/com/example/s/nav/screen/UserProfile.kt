@@ -353,6 +353,7 @@ fun StatItem(label: String, number: Int, number2: Int? = null) {
 
 @Composable
 fun MemoriesSection(navController: NavController, p: Stat) {
+    Log.d("ewq","eqw")
     PostScreenForMe(navController,p)
 }
 

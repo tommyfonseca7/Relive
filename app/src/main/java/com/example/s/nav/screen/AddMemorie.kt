@@ -348,6 +348,7 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
                     "awayTeam" to selectedMatch?.awayTeam?.name,
                     "awayTeamCrest" to selectedMatch?.awayTeam?.crest,
                     "date" to selectedDate.toString(),
+                    "images" to emptyList<String>(),
                     "matchId" to selectedMatch?.id,
                     "userId" to userDocumentId.value
                     )
