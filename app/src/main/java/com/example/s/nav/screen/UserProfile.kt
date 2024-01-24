@@ -103,14 +103,14 @@ fun DisplayProfileDetails(user: User, navController: NavController, p: Stat) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-        TopSection(user = user, navController = navController ) // Para a parte superior do perfil
+        TopSection(user = user, navController = navController, p =p ) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
         MemoriesSection(navController,p) // Para a seção de memórias
     }
 }
 
 @Composable
-fun TopSection(user: User, navController: NavController) {
+fun TopSection(user: User, navController: NavController, p: Stat) {
     val auth = com.google.firebase.ktx.Firebase.auth
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -149,18 +149,39 @@ fun TopSection(user: User, navController: NavController) {
         Spacer(modifier = Modifier.width(16.dp))
         // Nome e username
         Column {
-            Text(
-                text = user.name,
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color.Black,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-            )
-            Text(
-                text = "@${user.username}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
+            Row {
+                Column {
+                    Text(
+                        text = user.name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.Black,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                    )
+                    Text(
+                        text = "@${user.username}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                }
+                val numberOfFriends = (user.friends as? List<*>)?.size ?: 0
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier.padding(start = 30.dp)
+                ) {
+                    Text(
+                        text = "$numberOfFriends",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .padding(top = 8.dp, start = 30.dp)
+                    )
+                    Text(
+                        text = "Friends ",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
             // Outros detalhes como 'Edit', 'Discover', etc.
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -181,22 +202,10 @@ fun TopSection(user: User, navController: NavController) {
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
-                val numberOfFriends = (user.friends as? List<*>)?.size ?: 0
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "$numberOfFriends",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "Friends ",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+
                 TextButton(
                     onClick = {
-                        auth.signOut()
+                        p.signout = 1
                         navController.navigate(Screens.Sign.route)
                     },
                     modifier = Modifier

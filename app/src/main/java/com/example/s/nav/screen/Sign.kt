@@ -53,6 +53,9 @@ import com.google.firebase.ktx.Firebase
 @Composable
 fun SignIn(navController: NavController, main: MainActivity) {
     var auth = Firebase.auth
+    if (auth.currentUser != null){
+        auth.signOut()
+    }
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var errm by remember { mutableStateOf("") }
@@ -133,15 +136,6 @@ fun SignIn(navController: NavController, main: MainActivity) {
                 modifier = Modifier.padding(top = 10.dp)
             ) {
                 Text("Log in", fontSize = 24.sp)
-            }
-
-            Button(
-                onClick = {
-                    main.changeToPhoto()
-                },
-                modifier = Modifier.padding(top = 10.dp)
-            ) {
-                Text("Photo", fontSize = 24.sp)
             }
             
             Spacer(modifier = Modifier.height(16.dp))

@@ -122,8 +122,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun changeToPhoto(){
+    fun changeToPhoto(memId:String){
         val intent = Intent(this, Camera::class.java)
+        intent.putExtra("memId", memId)
         startActivity(intent)
     }
     @Composable

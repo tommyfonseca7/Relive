@@ -29,7 +29,7 @@ fun NavGraph (navController: NavHostController, main: MainActivity, p:Stat){
     {
         Log.d("123","dsa")
         composable(route = Screens.Sign.route){
-            if (Firebase.auth.currentUser != null){
+            if (Firebase.auth.currentUser != null && p.signout == 0){
                 main.change(1)
                 MemoriesScreen(navController = navController, main = main, p=p)
             }else{

@@ -20,7 +20,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.s.MainActivity
+import com.example.s.R
 import com.example.s.dataStructure.Stat
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
@@ -49,7 +54,7 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 
     @Composable
-    fun GalleryScreen(navController: NavController, main: Activity, modifier: Modifier =
+    fun GalleryScreen(navController: NavController, main: MainActivity, modifier: Modifier =
         Modifier, gameName: String, stat:Stat
     ) {
         Log.d("gamename", gameName)
@@ -130,12 +135,25 @@ import java.io.File
                         )
                     )
                 }
-                if (Firebase.auth.uid == stat.p?.userId)
-                Button(onClick = {
-                    multiplePhotoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                }) {
-                    Text(text = "Upload Image")
+                
+                if (Firebase.auth.uid == stat.p?.userId){
+                    Button(
+                        onClick = {
+                            main.changeToPhoto(gameName)
+                        },
+                        modifier = Modifier.padding(end = 6.dp)
+                    ) {
+                        Icon(painter = painterResource(R.drawable.iccamera),
+                            contentDescription = "",
+                            modifier = Modifier.size(30.dp))
+                    }
+                    Button(onClick = {
+                        multiplePhotoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                    }) {
+                        Text(text = "Upload Image")
+                    }
                 }
+                
             }
 
             LazyVerticalStaggeredGrid(
@@ -181,7 +199,7 @@ import java.io.File
         }
     }
 
-    private fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
+    fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
         storageReference.putFile(uri)
             .addOnSuccessListener() { taskSnapshot -> // After the image loads, get a public downloadUrl for the image
                 // on success

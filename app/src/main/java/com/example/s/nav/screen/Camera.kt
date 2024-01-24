@@ -1,7 +1,10 @@
 package com.example.s.nav.screen
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,9 +25,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.example.s.MainActivity
 import com.example.s.databinding.ActivityMainBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -36,6 +44,8 @@ class Camera: ComponentActivity()  {
     private lateinit var cameraExecutor: ExecutorService
 
     private var imageCapture: ImageCapture? = null
+    private lateinit var memId : String
+    private var count : Int = 0
 
     private val activityResultLauncher =
         registerForActivityResult(
@@ -57,7 +67,21 @@ class Camera: ComponentActivity()  {
 
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        memId = this.intent.getStringExtra("memId").toString()
+        Firebase.auth?.uid?.let {
+            Firebase.storage.getReference(it).child(memId).listAll().addOnSuccessListener { items ->
+                count = items.items.size
+            }
+        }
+
+
         start()
+    }
+
+    fun Context.findActivity(): Activity? = when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
     }
     fun start(){
         setContentView(viewBinding.root)
@@ -69,6 +93,7 @@ class Camera: ComponentActivity()  {
         //var androidlyButton = Button(this)
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
         viewBinding.back.setOnClickListener {
+            close()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
@@ -83,10 +108,10 @@ class Camera: ComponentActivity()  {
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, memId + count.toString())
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Relive")
             }
         }
 
@@ -109,6 +134,18 @@ class Camera: ComponentActivity()  {
 
                 override fun
                         onImageSaved(output: ImageCapture.OutputFileResults){
+                    Firebase.auth!!.uid?.let {
+                        val storageReference = Firebase.storage
+                            .getReference(it)
+                            .child(memId)
+                            .child(count.toString() + output.savedUri?.lastPathSegment!!)
+                        putImageInStorage(storageReference, output.savedUri!!,"")
+                    }
+                    Toast.makeText(
+                        applicationContext,
+                        "Photo saved and Uploaded",
+                        Toast.LENGTH_LONG
+                    ).show()
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
@@ -117,7 +154,14 @@ class Camera: ComponentActivity()  {
         )
     }
 
-
+    fun close(){
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        cameraProviderFuture.addListener({
+            // Used to bind the lifecycle of cameras to the lifecycle owner
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(this))
+    }
 
     fun change(){
         viewBinding.flip.setOnClickListener { startCam() }
