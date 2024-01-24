@@ -92,26 +92,26 @@ fun UserProfile(
 
     // Exibir detalhes do perfil
     userData.value?.let { user ->
-        DisplayProfileDetails(user,navController,p)
+        DisplayProfileDetails(user,navController,p, main)
     }
 
 }
 
 @Composable
-fun DisplayProfileDetails(user: User, navController: NavController, p: Stat) {
+fun DisplayProfileDetails(user: User, navController: NavController, p: Stat, main: Activity) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-        TopSection(user = user, navController = navController, p =p ) // Para a parte superior do perfil
+        TopSection(user = user, navController = navController, p =p , main) // Para a parte superior do perfil
         StatsSection(user = user) // Para a seção de estatísticas
         MemoriesSection(navController,p) // Para a seção de memórias
     }
 }
 
 @Composable
-fun TopSection(user: User, navController: NavController, p: Stat) {
+fun TopSection(user: User, navController: NavController, p: Stat, main: Activity) {
     val auth = com.google.firebase.ktx.Firebase.auth
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -207,6 +207,7 @@ fun TopSection(user: User, navController: NavController, p: Stat) {
                     onClick = {
                         p.signout = 1
                         navController.navigate(Screens.Sign.route)
+                        main.finish()
                     },
                     modifier = Modifier
                         .clip(RoundedCornerShape(20))
