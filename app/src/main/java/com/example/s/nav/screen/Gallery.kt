@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.s.dataStructure.Stat
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
@@ -49,7 +50,7 @@ import java.io.File
 
     @Composable
     fun GalleryScreen(navController: NavController, main: Activity, modifier: Modifier =
-        Modifier, gameName: String
+        Modifier, gameName: String, stat:Stat
     ) {
         Log.d("gamename", gameName)
         var imageUris by remember {
@@ -129,6 +130,7 @@ import java.io.File
                         )
                     )
                 }
+                if (Firebase.auth.uid == stat.p?.userId)
                 Button(onClick = {
                     multiplePhotoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
                 }) {
