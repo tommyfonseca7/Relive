@@ -102,9 +102,18 @@ fun PostScreen(navController: NavController, p:Stat
 @Composable
 fun ListALl(navController: NavController,postList: List<Post>, stat:Stat){
     val coroutineScope = rememberCoroutineScope()
+    if (postList.isEmpty()){
+        Image(painter = painterResource(id = R.drawable.box),
+            contentDescription = "empty",
+            modifier = Modifier.alpha(0.5f))
+        Text(text = "There is no memories Let make news memories",
+            fontSize = 15.sp,
+            modifier = Modifier.alpha(0.5f))
+    }
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
     {
+
         items(postList){ p ->
             PostListItem(navController = navController,p = p, coroutineScope = coroutineScope, stat = stat)
         }
