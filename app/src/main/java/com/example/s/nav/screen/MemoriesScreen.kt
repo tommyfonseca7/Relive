@@ -110,21 +110,6 @@ fun MemoriesScreen(navController: NavController, main: Activity, modifier: Modif
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             PostScreen(navController,p=p)
-            Button(onClick = {navController.navigate(Screens.AddMemorie.route)}) {
-                Text(text = "Add Memory")
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Memorie", tint = Color.White)
-            }
-            Button(onClick = {navController.navigate(Screens.Gallery.route
-                .replace(
-                    oldValue = "{sportType}",
-                    newValue = "Football")
-                .replace(
-                    oldValue = "{gameName}",
-                    newValue = "test")
-                // este parte serve para passar o tipo d edesporto e que jogo queremos ver
-            )}) {
-                Text(text = "Gallery")
-            }
         }
     }
 

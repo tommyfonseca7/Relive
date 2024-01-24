@@ -239,8 +239,38 @@ private suspend fun getUserById(userId : String) : User? {
 
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun PostScreenForMe(navController: NavController, p:Stat
+) {
+    var postList by remember {
+        mutableStateOf<List<Post>>(ArrayList())
+    }
+    var checkList = ArrayList<String>()
+    val db =Firebase.firestore
+    val docRef = db.collection("Users").document(Firebase.auth.currentUser?.uid!!)
+    docRef.get().addOnSuccessListener { document ->
+        if (document != null) {
 
+            var user = document.toObject(User::class.java)
+            if (user != null){
+
+                db.collection("Memories").get().addOnSuccessListener { list ->
+                    for (item in list){
+                        var cast = item.toObject(Post::class.java)
+                        if (cast != null && (cast.userId == Firebase.auth.currentUser?.uid )){
+                            if (!checkList.contains(item.id)){
+                                checkList.add(item.id)
+                                cast.docId = item.id
+                                postList = postList.toMutableList().apply {
+                                    add(cast) }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    ListALl(navController,postList = postList, p)
 }
