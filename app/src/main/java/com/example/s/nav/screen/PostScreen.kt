@@ -3,18 +3,22 @@ package com.example.s.nav.screen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -31,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.s.R
 import com.example.s.dataStructure.Post
 import com.example.s.dataStructure.Stat
@@ -210,15 +216,33 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                     }
 
                     user?.let {
-                        Text(
-                            text = "@${user!!.username}",
-                            fontSize = 20.sp,
+                        Row(
                             modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(16.dp)
-                        )
-                    }
+                                .align(Alignment.BottomEnd) // Isso alinha a Row no canto inferior direito do Box
+                                .padding(16.dp) // Isso adiciona um espaçamento ao redor da Row
+                        ) {
+                            Image(
+                                painter = if (user!!.profileImageUrl.isNullOrEmpty()) {
+                                    painterResource(id = R.drawable.ic_profile)
+                                } else {
+                                    rememberAsyncImagePainter(model = user!!.profileImageUrl)
+                                },
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, Color.White, CircleShape)
 
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "@${user!!.username}",
+                                fontSize = 20.sp,
+
+
+                            )
+                        }
+                    }
 
                 }
 
