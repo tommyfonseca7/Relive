@@ -135,7 +135,7 @@ fun Regist(navController: NavController, main: Activity) {
                 },
                 modifier = Modifier.padding(top = 10.dp)
             ) {
-                Text("Regist", fontSize = 24.sp)
+                Text("Register", fontSize = 24.sp)
             }
         }
     }

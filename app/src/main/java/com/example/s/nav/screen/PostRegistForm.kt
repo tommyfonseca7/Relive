@@ -76,7 +76,7 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             EditField(
-                label = "name",
+                label = "Name",
                 value = name,
                 onValueChanged = { name = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -90,7 +90,7 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
             )
 
             EditField(
-                label = "username",
+                label = "Username",
                 value = username,
                 onValueChanged = { username = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -104,7 +104,7 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
             )
 
             EditField(
-                label = "sports",
+                label = "Favourite Sports",
                 value = sports,
                 onValueChanged = { sports = it },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -140,7 +140,11 @@ fun PostRegistForm(navController: NavController, main: Activity, modifier: Modif
                                 )
                                 if (Firebase.auth.uid != null){
                                     usersRef.document(Firebase.auth.uid!!).set(user)
-                                        .addOnSuccessListener { documentReference ->
+                                        .addOnSuccessListener { navController.navigate(Screens.MemoriesScreen.route) {
+                                            popUpTo(Screens.Sign.route) {
+                                                inclusive = true
+                                            }
+                                        }
 
                                         }
                                         .addOnFailureListener { e ->
