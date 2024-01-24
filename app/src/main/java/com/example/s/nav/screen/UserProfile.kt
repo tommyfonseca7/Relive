@@ -57,6 +57,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.checkerframework.common.subtyping.qual.Bottom
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -149,11 +150,11 @@ fun TopSection(user: User, navController: NavController, p: Stat) {
         Spacer(modifier = Modifier.width(16.dp))
         // Nome e username
         Column {
-            Row {
+            Row  (modifier = Modifier.fillMaxWidth()){
                 Column {
                     Text(
                         text = user.name,
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = Color.Black,
                         modifier = Modifier
                             .padding(top = 8.dp)
@@ -166,23 +167,22 @@ fun TopSection(user: User, navController: NavController, p: Stat) {
                 }
                 val numberOfFriends = (user.friends as? List<*>)?.size ?: 0
                 Column(
-                    horizontalAlignment = Alignment.End,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(start = 30.dp)
+                        .align(Alignment.CenterVertically)
                 ) {
+                    Text(
+                        text = "Friends ",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                     Text(
                         text = "$numberOfFriends",
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(top = 8.dp, start = 30.dp)
                     )
-                    Text(
-                        text = "Friends ",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+
                 }
             }
 
-            // Outros detalhes como 'Edit', 'Discover', etc.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -210,14 +210,15 @@ fun TopSection(user: User, navController: NavController, p: Stat) {
                     },
                     modifier = Modifier
                         .clip(RoundedCornerShape(20))
-                        .size(48.dp)
+                        .height(48.dp)
+                        .width(80.dp)
                         .background(Color(0xFF2462C2))
 
 
                 ) {
                     Text(
                         "Log out",
-                        fontSize = 10.sp,
+                        fontSize = 16.sp,
                         color = Color.White,
                     )
                 }
