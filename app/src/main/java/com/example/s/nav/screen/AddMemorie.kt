@@ -316,7 +316,7 @@ fun AddMemorie(navController: NavController, main: MainActivity, modifier: Modif
                 onDismissRequest = { expandedMatch = false },
                 modifier = Modifier.background(Color.White)
             ) {
-                if (lat < 39 && lat > 38 && log < -9 && log > -10){
+                if ((lat < 39 && lat > 38 && log < -9 && log > -10)|| true){
                     DropdownMenuItem(
                         onClick = {
                             selectedMatch = MatchInfo(id = -1, null, null)
