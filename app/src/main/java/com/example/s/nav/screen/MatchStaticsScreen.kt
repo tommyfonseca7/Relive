@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -142,16 +143,12 @@ fun MemoryDetail(navController: NavController, modifier: Modifier =
             .verticalScroll(rememberScrollState())){
             ShowStatics(s1.ballPossession,s2.ballPossession,"ballPossession")
             ShowStatics(s1.cornerKicks, s2.cornerKicks, "corner Kicks")
-            ShowStatics(s1.fouls, s2.fouls,"fouls")
             ShowStatics(s1.freeKicks,s2.freeKicks,"free Kicks" )
             ShowStatics(s1.goalKicks,s2.goalKicks, "Goal Kicks")
             ShowStatics(s1.shots,s2.shots, "Shots")
             ShowStatics(s1.saves,s2.saves, "Saves")
             ShowStatics(s1.shotsOnGoal,s2.shotsOnGoal, "Shot On Goal")
             ShowStatics(s1.shotsOffGoal, s2.shotsOffGoal, "Shot Off Goal")
-            ShowStatics(s1.offsides,s2.offsides,"Off Sides")
-            ShowStatics(s1.throwIns,s2.throwIns, "Throw Ins")
-            ShowStatics(s1.yellowRedCards,s2.yellowRedCards, "Yellow Red Card")
             ShowStatics(s1.yellowCards,s2.yellowCards, "Yellow Card")
             ShowStatics(s1.redCards,s2.redCards, "Red Card")
         }
@@ -180,19 +177,19 @@ fun ShowStatics(home:Int,away:Int, title:String){
             Box(modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .align(Alignment.CenterVertically)){
-
-                Divider(color = c1,
-                    thickness = 1.dp,
-                    modifier = Modifier
-                        .fillMaxWidth(frag)
+                Image(painter = ColorPainter(c1),
+                    contentDescription = "",
+                    modifier = Modifier.height(1.dp)
+                            .fillMaxWidth(frag)
                         .align(Alignment.CenterEnd))
+
             }
             Box(modifier = Modifier
                 .fillMaxWidth(0.80f)
                 .align(Alignment.CenterVertically)){
-                Divider(color = c2,
-                    thickness = 1.dp,
-                    modifier = Modifier
+                Image(painter = ColorPainter(c2),
+                    contentDescription = "",
+                    modifier = Modifier.height(1.dp)
                         .fillMaxWidth(1 - frag)
                         .align(Alignment.CenterStart)
                         .padding(start = 1.dp))
