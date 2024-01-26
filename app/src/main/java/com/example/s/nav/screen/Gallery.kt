@@ -86,19 +86,18 @@ import java.io.File
 
             }
         )
-            storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
-                for (item in items.items) {
-                    count = items.items.size
-                    item.downloadUrl.addOnSuccessListener { uri ->
-                        if (!imageUris.contains(uri)){
-                            imageUris = imageUris.toMutableList().apply {
-                                add(uri) }
+        storage.getReference(user!!.uid).child(gameName).listAll().addOnSuccessListener { items ->
+            for (item in items.items) {
+                count = items.items.size
+                item.downloadUrl.addOnSuccessListener { uri ->
+                    if (!imageUris.contains(uri)){
+                        imageUris = imageUris.toMutableList().apply {
+                            add(uri)
                         }
-
                     }
                 }
-
             }
+        }
 
         Column {
             Row (modifier = Modifier
@@ -159,10 +158,6 @@ import java.io.File
                 modifier = Modifier.fillMaxSize()
             )
         }
-
-        //UI
-
-
     }
 
     private fun load(sportType : String, gameName : String, uris: List<Uri>){

@@ -196,7 +196,6 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                             fontSize = 30.sp)
                     }
                 }
-
                 Box(modifier = Modifier.fillMaxWidth()){
                     if (p.images?.size == 0){
                         Image(painter = painterResource(id = R.drawable.white),
@@ -219,8 +218,6 @@ fun PostListItem(navController: NavController,p: Post, coroutineScope: Coroutine
                                 .alpha(0.5f)
                         )
                     }
-
-
                     p.date?.let {
                         // Text aligned to the top end
                         Text(
@@ -404,7 +401,6 @@ fun PostScreenForMe(navController: NavController, p:Stat
 
             }
         }
-
         ListALl(navController,postList = postList, p)
     }
 

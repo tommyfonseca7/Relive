@@ -101,8 +101,6 @@ fun MemoryDetail(navController: NavController, modifier: Modifier =
                         }
 
                     }
-
-
                     Row (modifier = Modifier
                         .align(Alignment.CenterHorizontally)){
                         AsyncImage(
@@ -273,6 +271,5 @@ fun ShowStatics(home:Int,away:Int, title:String){
             }
             Text(text = away.toString(), fontSize = 20.sp)
         }
-
     }
 }

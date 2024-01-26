@@ -8,8 +8,6 @@ import androidx.navigation.compose.composable
 import com.example.s.MainActivity
 import com.example.s.dataStructure.Stat
 import com.example.s.nav.screen.AddMemorie
-import com.example.s.nav.screen.Done
-import com.example.s.nav.screen.Edit
 import com.example.s.nav.screen.GalleryScreen
 import com.example.s.nav.screen.MemoriesScreen
 import com.example.s.nav.screen.MemoryDetail
@@ -39,19 +37,9 @@ fun NavGraph (navController: NavHostController, main: MainActivity, p:Stat){
 
         }
 
-        composable(route = Screens.Done.route){
-            main.change(1)
-            Done(navController = navController )
-        }
-
         composable(route = Screens.Regist.route){
             main.change(0)
             Regist(navController = navController, main = main )
-        }
-
-        composable(route = Screens.Edit.route){
-            main.change(0)
-            Edit(navController = navController, main = main )
         }
 
         composable(route = Screens.PostRegistForm.route) {

@@ -1,5 +1,5 @@
 package com.example.s.nav.screen
-
+//abre as imgens e pode navegar
 /**@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(/*navController: NavController, main: Activity, modifier: Modifier =
